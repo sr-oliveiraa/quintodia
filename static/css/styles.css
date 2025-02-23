@@ -1,0 +1,242 @@
+body {
+  font-family: 'Arial', sans-serif;
+  background: #C0C0C0;
+  color: #333;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+header {
+  background-color: #28a745;
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+nav {
+  display: flex;
+  justify-content: space-around;
+  background: #fff;
+  width: 100%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  border-radius: 8px;
+}
+
+nav a {
+  flex: 1;
+  padding: 15px;
+  text-decoration: none;
+  color: #28a745;
+  font-weight: bold;
+  text-align: center;
+  transition: color 0.3s;
+}
+
+nav a:hover {
+  color: #dc3545; /* vermelho */
+  background-color: transparent; /* Remove o fundo verde */
+}
+
+main {
+  width: 100%;
+  max-width: 1200px;
+  padding: 20px;
+  margin-top: 30px;
+}
+
+.card {
+  background: #fff;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+h3 {
+  color: #28a745;
+  margin-bottom: 15px;
+  font-size: 1.5em;
+}
+
+.icon {
+  width: 30px;
+  height: 30px;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+nav {
+  display: flex;
+  justify-content: space-around;
+  background: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+nav a {
+  flex: 1;
+  padding: 15px;
+  text-decoration: none;
+  color: #28a745;
+  font-weight: bold;
+  text-align: center;
+}
+
+nav a:hover {
+  color: #dc3545; /* vermelho */
+  background-color: transparent; /* Remove o fundo verde */
+}
+
+main {
+  padding: 20px;
+}
+
+.card {
+  background: #fff;
+  margin-bottom: 15px;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.card h3 {
+  margin-bottom: 10px;
+  color: #28a745;
+}
+
+.card p {
+  color: #333;
+}
+
+footer {
+  background: #28a745;
+  color: #fff;
+  text-align: center;
+  padding: 10px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+/* Estilo para o botão Voltar */
+button {
+  background-color: #28a745; /* Verde do header */
+  color: white;
+  border: none;
+  padding: 5px 15px; /* Diminui o padding para tornar o botão menor */
+  font-size: 14px; /* Fonte menor */
+  font-weight: bold;
+  border-radius: 3px; /* Arredondamento mais suave */
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Efeito quando o mouse passa por cima do botão */
+button:hover {
+  background-color: #dc3545; /* Vermelho do hover do link */
+  transform: scale(1.05); /* Leve aumento no tamanho do botão */
+}
+
+/* Efeito ao clicar no botão */
+button:active {
+  background-color: #155d27; /* Verde mais escuro */
+  transform: scale(0.98); /* Diminui um pouco o botão */
+}
+
+/* Adicionando uma borda para quando o botão estiver em foco */
+button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.5); /* Bordas verdes */
+}
+
+/* Responsividade para mobile */
+@media (max-width: 600px) {
+  nav {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  nav a {
+    font-size: 14px;
+    padding: 10px;
+    width: 100%;
+    text-align: center;
+  }
+  
+  .card {
+    padding: 15px;
+  }
+  
+  .card h3 {
+    font-size: 18px;
+  }
+  
+  main {
+    padding: 10px;
+  }
+  
+  header {
+    padding: 15px;
+  }
+  
+  button {
+    padding: 10px;
+    font-size: 12px;
+  }
+  
+  .icon {
+    width: 25px;
+    height: 25px;
+  }
+}
+
+/* Botão de Logout */
+.btn-logout {
+  padding: 12px 30px; /* Aumenta o tamanho do botão */
+  background-color: #FF4C4C; /* Cor de fundo vermelha vibrante */
+  color: white; /* Texto branco */
+  border: none;
+  border-radius: 8px; /* Bordas arredondadas */
+  font-size: 1.1em; /* Tamanho da fonte */
+  font-weight: bold; /* Texto em negrito */
+  cursor: pointer; /* Cursor de mão ao passar sobre o botão */
+  transition: background-color 0.3s ease, transform 0.3s ease; /* Transição suave para cor e efeito de crescimento */
+  text-decoration: none; /* Remove o sublinhado caso seja link */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombras suaves */
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+}
+
+/* Efeito de hover */
+.btn-logout:hover {
+  background-color: #ff3333; /* Cor mais escura quando passa o mouse */
+  transform: scale(1.05); /* Aumenta ligeiramente o tamanho do botão ao passar o mouse */
+}
+
+/* Efeito de clique (active) */
+.btn-logout:active {
+  transform: scale(1); /* Retorna ao tamanho original ao clicar */
+  background-color: #cc2929; /* Cor ainda mais escura ao clicar */
+}
+
+/* Efeito de foco */
+.btn-logout:focus {
+  outline: none; /* Remove o contorno padrão */
+  box-shadow: 0 0 10px rgba(255, 76, 76, 0.8); /* Adiciona uma borda iluminada ao focar */
+}
+
+.icon {
+  width: 30px;
+  height: 30px;
+  margin-right: 8px;
+  vertical-align: middle;
+}

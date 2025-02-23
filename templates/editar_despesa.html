@@ -4,115 +4,154 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Editar Despesa</title>
-</head>
-<style>/* Estilos gerais para o corpo da página */
+  <style>
+    /* Reset básico e configuração de box-sizing */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Estilo do body com fundo gradiente e fonte moderna */
     body {
-        font-family: Arial, sans-serif;
-        background-color: #f4f4f9;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #e9efff, #f4f4f9);
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
     }
-    
-    /* Container do formulário de edição */
-    h1 {
-        font-size: 2em;
-        text-align: center;
-        color: #333;
-    }
-    
+
+    /* Container central para o formulário e conteúdo */
     .form-container {
-        background-color: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        width: 100%;
-        max-width: 500px;
-        margin: auto;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      width: 100%;
+      max-width: 500px;
     }
-    
-    /* Estilos dos labels e inputs */
+
+    /* Estilo dos títulos */
+    h1 {
+      text-align: center;
+      color: #222;
+      margin-bottom: 20px;
+    }
+
+    /* Estilo dos labels */
     label {
-        font-size: 1em;
-        margin-bottom: 5px;
-        display: block;
-        color: #333;
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #555;
+      font-size: 1em;
     }
-    
+
+    /* Estilos dos inputs e checkbox */
     input[type="text"],
     input[type="number"],
     input[type="date"],
+    input[type="password"],
+    input[type="email"],
+    textarea {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      font-size: 1em;
+      transition: border-color 0.3s ease;
+    }
+
+    input:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #007BFF;
+    }
+
+    /* Estilo para checkbox */
     input[type="checkbox"] {
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 15px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        font-size: 1em;
+      margin-right: 10px;
     }
-    
-    input[type="checkbox"] {
-        width: auto;
-        margin-right: 10px;
-    }
-    
-    input[type="checkbox"]:checked {
-        background-color: #4CAF50;
-    }
-    
+
     /* Botão de envio */
     button[type="submit"] {
-        width: 100%;
-        padding: 10px;
-        background-color: #007BFF;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        font-size: 1em;
-        cursor: pointer;
-        transition: background-color 0.3s;
+      width: 100%;
+      padding: 12px;
+      background-color: #007BFF;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 1.1em;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
     }
-    
+
     button[type="submit"]:hover {
-        background-color: #0056b3;
+      background-color: #0056b3;
+      transform: translateY(-2px);
     }
-    
+
+    button[type="submit"]:active {
+      transform: translateY(0);
+    }
+
     /* Link de voltar */
     a {
-        display: block;
-        text-align: center;
-        margin-top: 20px;
-        text-decoration: none;
-        color: #007BFF;
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      text-decoration: none;
+      color: #007BFF;
+      transition: color 0.3s;
     }
-    
+
     a:hover {
-        text-decoration: underline;
+      color: #0056b3;
+      text-decoration: underline;
     }
-    </style>
+
+    /* Responsividade para telas menores */
+    @media (max-width: 600px) {
+      .form-container {
+        padding: 20px;
+        max-width: 100%;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+      button[type="submit"] {
+        font-size: 1em;
+      }
+    }
+  </style>
+</head>
 <body>
-  <h1>Editar Despesa</h1>
+  <div class="form-container">
+    <h1>Editar Despesa</h1>
 
-  <!-- Formulário de Edição -->
-  <form action="{{ url_for('editar_despesa', despesa_id=despesa.id) }}" method="POST">
-    <label for="descricao">Descrição:</label>
-    <input type="text" name="descricao" value="{{ despesa.descricao }}" required><br>
+    <!-- Formulário de Edição -->
+    <form action="{{ url_for('editar_despesa', despesa_id=despesa.id) }}" method="POST">
+      
+      <label for="descricao">Descrição:</label>
+      <input type="text" name="descricao" value="{{ despesa.descricao }}" required>
 
-    <label for="valor">Valor:</label>
-    <input type="number" name="valor" value="{{ despesa.valor }}" step="0.01" required><br>
+      <label for="valor">Valor:</label>
+      <input type="number" name="valor" value="{{ despesa.valor }}" step="0.01" required>
 
-    <label for="data_vencimento">Data de Vencimento:</label>
-    <input type="date" name="data_vencimento" value="{{ despesa.data_vencimento.strftime('%Y-%m-%d') }}" required><br>
+      <label for="data_vencimento">Data de Vencimento:</label>
+      <input type="date" name="data_vencimento" value="{{ despesa.data_vencimento.strftime('%Y-%m-%d') }}" required>
 
-    <label for="pago">Pago:</label>
-    <input type="checkbox" name="pago" {% if despesa.pago %}checked{% endif %}><br>
+      <label for="pago">Pago:</label>
+      <input type="checkbox" name="pago" {% if despesa.pago %}checked{% endif %}>
 
-    <button type="submit">Salvar Alterações</button>
-  </form>
+      <button type="submit">Salvar Alterações</button>
+    </form>
 
-  <a href="{{ url_for('expenses') }}">Voltar</a>
+    <a href="{{ url_for('expenses') }}">Voltar</a>
+  </div>
 </body>
 </html>

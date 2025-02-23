@@ -5,151 +5,457 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Casa e Moradores - Gerenciamento Doméstico</title>
   <style>
+    /* Reset básico e configuração de box-sizing */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
+  
+    /* Estilo do body com fundo gradiente e fonte moderna */
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Arial', sans-serif;
       background: #C0C0C0;
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
     }
+  
+    /* Estilo do cabeçalho */
     header {
       background-color: #28a745;
       color: #fff;
-      padding: 15px;
+      padding: 20px;
       text-align: center;
+      width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
+  
+    h1 {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+  
+    /* Barra de navegação */
     nav {
       display: flex;
       justify-content: space-around;
       background: #fff;
+      width: 100%;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      margin-top: 20px;
+      border-radius: 8px;
     }
-    nav a {
+  
+    nav a, nav button {
       flex: 1;
-      padding: 15px;
+      padding: 12px;
       text-decoration: none;
       color: #28a745;
       font-weight: bold;
       text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s; /* Removido background-color */
     }
-    nav a:hover {
-      color: #dc3545;
+
+    nav button {
+      background-color: #28a745;  /* Verde sólido */
+      color: white;  /* Letra branca */
+      border: none;
+      font-weight: bold;
+      text-align: center;
+      cursor: pointer;
+      border-radius: 5px;
     }
+  
+    
+  
+    /* Estilo principal */
     main {
+      width: 100%;
+      max-width: 1200px;
       padding: 20px;
+      margin-top: 30px;
     }
+  
+    /* Estilo dos cards */
     .card {
       background: #fff;
-      padding: 15px;
+      padding: 20px;
+      margin-bottom: 20px;
       border-radius: 8px;
-      margin-bottom: 15px;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
-    .card h3 {
+  
+    h3 {
       color: #28a745;
-      margin-bottom: 10px;
+      margin-bottom: 15px;
+      font-size: 1.5em;
     }
+  
     .resident {
       border-bottom: 1px solid #ddd;
       padding: 10px 0;
     }
+  
     .resident:last-child {
       border-bottom: none;
     }
+  
     p {
       margin-bottom: 8px;
-      color: #333;
     }
-    button {
-      background-color: #28a745;
-      color: white;
-      border: none;
-      padding: 5px 15px;
-      font-size: 14px;
-      font-weight: bold;
-      border-radius: 3px;
-      cursor: pointer;
-      transition: background-color 0.3s, transform 0.2s;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  
+    /* Estilos de campos de entrada (inputs) */
+    input[type="text"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], textarea {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 1em;
+      transition: border-color 0.3s;
     }
-    button:hover {
-      background-color: #dc3545;
+  
+    input:focus {
+      outline: none;
+      border-color: #28a745;
+    }
+  
+    /* Melhorar o estilo de inputs e áreas de texto */
+    textarea {
+      resize: vertical;
+    }
+  
+   /* Estilo do botão de Voltar */
+.btn-voltar {
+  background-color: #28a745; /* Verde predominante */
+  color: white;
+  border: none;
+  padding: 4px 8px;  /* Reduzido para tornar o botão mais compacto */
+  font-size: 12px;  /* Fonte um pouco menor */
+  font-weight: bold;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin: 5px 5px 5px 20px; /* Maior margem à esquerda para afastar do canto; margem direita reduzida */
+  display: inline-block; /* Para não ocupar largura total */
+  width: 120px; /* Ajuste a largura conforme necessário */
+}
+
+.btn-voltar:hover {
+  background-color: #218838;
+  transform: scale(1.05);
+}
+
+.btn-voltar:active {
+  background-color: #155d27;
+  transform: scale(0.98);
+}
+
+.btn-voltar:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.5);
+}
+
+
+.btn-voltar:hover {
+  background-color: #218838; /* Verde um pouco mais escuro no hover */
+  transform: scale(1.05);
+}
+
+.btn-voltar:active {
+  background-color: #155d27;
+  transform: scale(0.98);
+}
+
+.btn-voltar:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.5);
+}
+
+/* Exemplo de integração com a barra de navegação */
+nav {
+  display: flex;
+  justify-content: space-around;
+  background: #fff;
+  padding: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+nav a {
+  flex: 1;
+  padding: 15px;
+  text-decoration: none;
+  color: #28a745;
+  font-weight: bold;
+  text-align: center;
+  transition: 0.3s;
+}
+
+nav a:hover {
+  background-color: #28a745;
+  color: #fff;
+}
+
+  
+    /* Efeito de hover (sem mudança de cor, mas ligeiro aumento) */
+    nav button:hover {
+      background-color: #218838;  /* Cor permanece verde */
       transform: scale(1.05);
     }
-    button:active {
-      background-color: #155d27;
-      transform: scale(0.98);
+  
+    /* Efeito de pressionamento do botão */
+    nav button:active {
+      transform: scale(0.98);  /* Menor no clique */
     }
-    button:focus {
-      outline: none;
-      box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.5);
-    }
-    @media (max-width: 600px) {
+  
+    /* Responsividade para dispositivos menores */
+    @media (max-width: 768px) {
+      nav button {
+        padding: 6px 12px;  /* Menor ainda em telas pequenas */
+        font-size: 13px;
+      }
+  
       nav a {
-        font-size: 14px;
-        padding: 10px;
+        padding: 12px;
+        font-size: 13px;
       }
-      .card h3 {
-        font-size: 18px;
+  
+      h1 {
+        font-size: 1.5em;
+      }
+  
+      .card {
+        padding: 15px;
+      }
+  
+      h3 {
+        font-size: 1.3em;
       }
     }
+
+     /* Estilo do botão Adicionar Morador e Salvar Alterações */
+  .action-button {
+    background-color: #218838; /* Azul vibrante */
+    color: white;
+    font-weight: bold;
+    padding: 5px 10px;
+    font-size: 1.1em;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+    width: auto; /* Ajusta o tamanho conforme o conteúdo */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 10px;
+  }
+
+  /* Efeito de hover */
+  .action-button:hover {
+    background-color: #1b4123; /* Azul mais escuro */
+    transform: scale(1.05); /* Leve aumento de tamanho */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Sombra mais intensa */
+  }
+
+  /* Efeito de pressionamento (click) */
+  .action-button:active {
+    transform: scale(0.98); /* Leve diminuição de tamanho */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra mais suave */
+  }
+
+  /* Foco (quando o botão recebe o foco) */
+  .action-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5); /* Sombra azul quando focado */
+  }
+
+  /* Responsividade para dispositivos menores */
+  @media (max-width: 768px) {
+    .action-button {
+      padding: 10px 18px; /* Ajusta o tamanho para telas pequenas */
+      font-size: 1em; /* Ajusta o tamanho da fonte */
+    }
+  }
+
+    input[type="submit"] {
+    background-color: #28a745; /* Verde sólido */
+    color: white; /* Letra branca */
+    border: none;
+    padding: 12px 20px; /* Tamanho confortável */
+    font-size: 1em;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    width: auto; /* Ajusta o tamanho conforme o conteúdo do botão */
+    margin-top: 10px; /* Distância do topo */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+  }
+
+  /* Efeito de hover no botão submit */
+  input[type="submit"]:hover {
+    background-color: #218838; /* Verde mais escuro */
+    transform: scale(1.05); /* Leve aumento de escala */
+  }
+
+  /* Efeito de pressionamento (click) do botão submit */
+  input[type="submit"]:active {
+    transform: scale(0.98); /* Leve diminuição de escala no clique */
+  }
+
+  /* Foco no botão submit */
+  input[type="submit"]:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.5); /* Sombra verde quando o botão é focado */
+  }
+
+  .btn-back {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    top: 20px;
+    left: 20px;
+  }
+
+  .btn-back:hover {
+    background-color: #218838;
+    transform: scale(1.05);
+  }
+
+  .btn-back:active {
+    background-color: #1e7e34;
+    transform: scale(0.98);
+  }
+
+  .profile-pic {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+  }
+
+  .resident-info {
+    display: flex;
+    align-items: center;
+  }
+
+  .hidden {
+    display: none;
+  }
+  .edit-card {
+    margin-top: 20px;
+    text-align: center;
+  }
+  .icon {
+  width: 30px;
+  height: 30px;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
   </style>
+  
 </head>
 <body>
-  <header>
-    <h1>Casa e Moradores</h1>
-  </header>
-  
-  <nav>
-    <button onclick="voltarPagina()">Voltar</button>
-    <a href="{{ url_for('dashboard') }}">🏠 Dashboard</a>
-    <a href="{{ url_for('tasks') }}">📋 Tarefas</a>
-    <a href="{{ url_for('expenses') }}">💰 Despesas</a>
-    <a href="{{ url_for('house_info') }}">🏡 Casa/Moradores</a>
-  </nav>
-  
+  {% extends "base.html" %}
+
+  {% block title %}Casa e Moradores - Gerenciamento Doméstico{% endblock %}
+
+  {% block header %}Casa e Moradores{% endblock %}
+
+  {% block content %}
   <main>
+    
+    <!-- Informações da Casa -->
     <div class="card">
       <h3>Informações da Casa</h3>
       <p><strong>Nome:</strong> {{ casa.nome }}</p>
       <p><strong>Endereço:</strong> {{ casa.endereco }}</p>
-      <p><strong>Tamanho:</strong> {{ casa.tamanho }} m²</p>
-      <p><strong>Número de Pessoas:</strong> {{ casa.num_moradores }}</p>
+      
     </div>
     
-    <!-- Lista de Moradores com Formulário de Edição -->
+    <!-- Lista de Moradores -->
     <div class="card">
       <h3>Moradores</h3>
+      {% if moradores %}
+        <ul>
+          {% for morador in moradores %}
+            <li class="resident-info">
+              <img src="{{ morador.foto_url }}" alt="Foto de {{ morador.nome }}" class="profile-pic">
+              <div>
+                <strong>{{ morador.nome }}</strong><br>
+                Email: {{ morador.email }}
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>Nenhum morador cadastrado.</p>
+      {% endif %}
+    </div>
+
+    <!-- Card para o botão de editar moradores -->
+    <div class="card edit-card">
+      <button class="action-button" onclick="toggleEditSection()">Editar Moradores</button>
+    </div>
+
+    <!-- Seção de edição de moradores -->
+    <div id="edit-section" class="card hidden">
+      <h3>Editar Moradores</h3>
       {% for morador in moradores %}
-      <div class="resident">
-        <form method="POST" action="{{ url_for('editar_morador', morador_id=morador.id) }}">
-          <p><strong>Nome:</strong> <input type="text" name="nome" value="{{ morador.nome }}" required></p>
-          <p><strong>Email:</strong> <input type="email" name="email" value="{{ morador.email }}" required></p>
-          <button type="submit">Salvar Alterações</button>
-        </form>
-      </div>
+        <div class="resident">
+          <form method="POST" action="{{ url_for('editar_morador', morador_id=morador.id) }}" enctype="multipart/form-data">
+            <p><strong>Nome:</strong> <input type="text" name="nome" value="{{ morador.nome }}" required></p>
+            <p><strong>Email:</strong> <input type="email" name="email" value="{{ morador.email }}" required></p>
+            <p><strong>Foto de Perfil:</strong> <input type="file" name="foto"></p>
+            <button class="action-button" type="submit">Salvar Alterações</button>
+          </form>
+        </div>
       {% endfor %}
     </div>
 
-  <!-- Formulário para Adicionar Novo Morador -->
-<div class="card">
-  <h3>Adicionar Novo Morador</h3>
-  <form method="POST" action="{{ url_for('adicionar_morador') }}">
-    <input type="text" name="nome" placeholder="Nome do Morador" required>
-    <input type="email" name="email" placeholder="Email do Morador" required>
-    <input type="password" name="senha" placeholder="Senha" required>
-    <button type="submit">Adicionar Morador</button>
-  </form>
-</div>
+    <!-- Formulário para Adicionar Novo Morador -->
+    <div class="card">
+      <h3>Adicionar Novo Morador</h3>
+      <form method="POST" action="{{ url_for('adicionar_morador') }}" enctype="multipart/form-data">
+        <input type="text" name="nome" placeholder="Nome do Morador" required>
+        <input type="email" name="email" placeholder="Email do Morador" required>
+        <input type="password" name="senha" placeholder="Senha" required>
+        <input type="file" name="foto" required>
+        <button class="action-button" type="submit">Adicionar Morador</button>
+      </form>
+    </div>
 
-    
-  
-  
   </main>
+  {% endblock %}
 
   <script>
+    // Função para mostrar/ocultar a seção de edição de moradores
+    function toggleEditSection() {
+      var editSection = document.getElementById('edit-section');
+      if (editSection.classList.contains('hidden')) {
+        editSection.classList.remove('hidden');
+      } else {
+        editSection.classList.add('hidden');
+      }
+    }
+
     // Função para voltar à página anterior
     function voltarPagina() {
         window.history.back(); // Volta à página anterior

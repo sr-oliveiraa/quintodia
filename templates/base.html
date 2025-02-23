@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+  <header>
+    <h1>{% block header %}{% endblock %}</h1>
+  </header>
+  
+  <nav>
+    <a href="{{ url_for('dashboard') }}">
+      <img src="{{ url_for('static', filename='img/home_17905779.gif') }}" alt="Dashboard" class="icon"> Dashboard
+    </a>
+    <a href="{{ url_for('tasks') }}">
+      <img src="{{ url_for('static', filename='img/prancheta.gif') }}" alt="Tarefas" class="icon"> Tarefas
+    </a>
+    <a href="{{ url_for('expenses') }}">
+      <img src="{{ url_for('static', filename='img/dolar.gif') }}" alt="Despesas" class="icon"> Despesas
+    </a>
+    <a href="{{ url_for('house_info') }}">
+      <img src="{{ url_for('static', filename='img/perfil.gif') }}" alt="Casa/Moradores" class="icon"> Casa/Moradores
+    </a>
+  </nav>
+  
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+</body>
+</html>

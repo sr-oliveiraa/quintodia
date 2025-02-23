@@ -147,21 +147,46 @@
         font-size: 18px;
       }
     }
+    .btn-back {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      position: absolute;
+      top: 20px;
+      left: 20px;
+    }
+    .btn-back:hover {
+      background-color: #218838;
+      transform: scale(1.05);
+    }
+    .btn-back:active {
+      background-color: #1e7e34;
+      transform: scale(0.98);
+    }
+    .icon {
+  width: 50px;
+  height: 50px;
+  margin-right: 8px;
+  vertical-align: middle;
+}
   </style>
 </head>
 <body>
-  <header>
-    <h1>💰 Gerenciamento de Despesas</h1>
-  </header>
   
-  <nav>
-    <button onclick="voltarPagina()">Voltar</button>
-    <a href="{{ url_for('dashboard') }}">🏠 Dashboard</a>
-    <a href="{{ url_for('tasks') }}">📋 Tarefas</a>
-    <a href="{{ url_for('expenses') }}">💰 Despesas</a>
-    <a href="{{ url_for('house_info') }}">🏡 Casa/Moradores</a>
-  </nav>
-  
+{% extends "base.html" %}
+
+{% block title %}Despesas - Gerenciamento Doméstico{% endblock %}
+
+{% block header %}Despesas{% endblock %}
+
+{% block content %}
   <main>
     <!-- Formulário para adicionar nova despesa -->
     <div class="form-expense">
@@ -204,29 +229,6 @@
       <p style="text-align: center; color: #666; margin-top: 20px;">Nenhuma despesa cadastrada ainda.</p>
     {% endif %}
   </main>
-  
-  <!-- Página de Edição de Despesa -->
-  {% if despesa_edit %}
-    <div class="form-expense">
-      <h3>✏️ Editar Despesa</h3>
-      <form action="{{ url_for('editar_despesa') }}" method="POST">
-        <input type="hidden" name="despesa_id" value="{{ despesa_edit.id }}">
-        <input type="text" name="descricao" value="{{ despesa_edit.descricao }}" required>
-        <input type="number" name="valor" value="{{ despesa_edit.valor }}" step="0.01" required>
-        <input type="date" name="data_vencimento" value="{{ despesa_edit.data_vencimento.strftime('%Y-%m-%d') }}" required>
-        <label for="pago">
-          <input type="checkbox" name="pago" {% if despesa_edit.pago %} checked {% endif %}> Pago
-        </label>
-        <button type="submit" class="btn-green">💾 Atualizar Despesa</button>
-      </form>
-    </div>
-  {% endif %}
-
-  <script>
-    // Função para voltar à página anterior
-    function voltarPagina() {
-        window.history.back(); // Volta à página anterior
-    }
-  </script>
+{% endblock %}
 </body>
 </html>

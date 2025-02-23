@@ -124,50 +124,192 @@
       outline: none;
       box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.5);
     }
+
+    /* Estilo do container da tarefa */
+.tarefa-container {
+    background-color: #f9f9f9; /* Fundo claro */
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 8px; /* Cantos arredondados */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombras suaves */
+    transition: background-color 0.3s ease;
+}
+
+.tarefa-container:hover {
+    background-color: #f0f0f0; /* Mudança de cor quando passar o mouse */
+}
+
+/* Título da tarefa */
+.tarefa-container h3 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+/* Descrição da tarefa */
+.tarefa-container p {
+    font-size: 1rem;
+    color: #555;
+    line-height: 1.5;
+}
+
+/* Estilo para mostrar quem concluiu a tarefa */
+.tarefa-container .concluida p {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #4caf50; /* Verde */
+}
+
+/* Estilo para o botão de marcar como concluída */
+.tarefa-container form button {
+    background-color: #007bff; /* Azul */
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.tarefa-container form button:hover {
+    background-color: #0056b3; /* Azul escuro ao passar o mouse */
+}
+
+
+
+    button {
+      background-color: #28a745; /* Verde do header */
+      color: white;
+      border: none;
+      padding: 5px 15px; /* Diminui o padding para tornar o botão menor */
+      font-size: 14px; /* Fonte menor */
+      font-weight: bold;
+      border-radius: 3px; /* Arredondamento mais suave */
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Efeito quando o mouse passa por cima do botão */
+    button:hover {
+      background-color: #dc3545; /* Vermelho do hover do link */
+      transform: scale(1.05); /* Leve aumento no tamanho do botão */
+    }
+
+    /* Efeito ao clicar no botão */
+    button:active {
+      background-color: #155d27; /* Verde mais escuro */
+      transform: scale(0.98); /* Diminui um pouco o botão */
+    }
+
+    /* Adicionando uma borda para quando o botão estiver em foco */
+    button:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.5); /* Bordas verdes */
+    }
+
+  /* Estilo do botão de Voltar */
+.btn-voltar {
+  background-color: #28a745; /* Verde predominante */
+  color: white;
+  border: none;
+  padding: 5px 10px; /* Menor padding para diminuir o tamanho */
+  font-size: 13px; /* Fonte um pouco menor */
+  font-weight: bold;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin: 5px 10px 5px 20px; /* Maior margem à esquerda para afastar do canto */
+}
+
+.btn-voltar:hover {
+  background-color: #218838; /* Verde um pouco mais escuro no hover */
+  transform: scale(1.05);
+}
+
+.btn-voltar:active {
+  background-color: #155d27;
+  transform: scale(0.98);
+}
+
+.btn-voltar:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.5);
+}
+
+/* Exemplo de integração com a barra de navegação */
+nav {
+  display: flex;
+  justify-content: space-around;
+  background: #fff;
+  padding: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+nav a {
+  flex: 1;
+  padding: 15px;
+  text-decoration: none;
+  color: #28a745;
+  font-weight: bold;
+  text-align: center;
+  transition: 0.3s;
+}
+
+nav a:hover {
+  background-color: #28a745;
+  color: #fff;
+}
+
+/* Para usar o botão Voltar, adicione a classe 'btn-voltar' ao elemento */
+.icon {
+  width: 30px;
+  height: 30px;
+  margin-right: 8px;
+  vertical-align: middle;
+}
   </style>
 </head>
 <body>
-  <header>
-    <h1>Tarefas</h1>
-  </header>
+  {% extends "base.html" %}
+
+  {% block title %}Tarefas - Gerenciamento Doméstico{% endblock %}
+
+  {% block header %}Tarefas{% endblock %}
+
+  {% block content %}
+  <div class="form-task">
+    <h3>Adicionar Nova Tarefa</h3>
+    <form method="POST" enctype="multipart/form-data" action="{{ url_for('tasks') }}">
+      <input type="text" name="titulo" placeholder="Título da Tarefa" required>
+      <textarea name="descricao" rows="3" placeholder="Descrição da Tarefa"></textarea>
+      <input type="file" name="foto" accept="image/*">
+      <button type="submit" class="btn-green">Adicionar Tarefa</button>
+    </form>
+  </div>
   
-  <nav>
-    <button onclick="voltarPagina()">Voltar</button>
-    <a href="{{ url_for('dashboard') }}">🏠 Dashboard</a>
-    <a href="{{ url_for('tasks') }}">📋 Tarefas</a>
-    <a href="{{ url_for('expenses') }}">💰 Despesas</a>
-    <a href="{{ url_for('house_info') }}">🏡 Casa/Moradores</a>
-  </nav>
-  
-  <main>
-    <div class="form-task">
-      <h3>Adicionar Nova Tarefa</h3>
-      <form method="POST" enctype="multipart/form-data" action="{{ url_for('tasks') }}">
-        <input type="text" name="titulo" placeholder="Título da Tarefa" required>
-        <textarea name="descricao" rows="3" placeholder="Descrição da Tarefa"></textarea>
-        <input type="file" name="foto" accept="image/*">
-        <button type="submit" class="btn-green">Adicionar Tarefa</button>
-      </form>
-    </div>
-    
-    <!-- Exibição das Tarefas -->
-{% for tarefa in tarefas %}
-<div class="card">
-  <h3>{{ tarefa.titulo }}</h3>
-  <p>{{ tarefa.descricao }}</p>
-  <p>Status: <strong>{{ "Concluída" if tarefa.concluida else "Pendente" }}</strong></p>
-  <form method="POST" action="{{ url_for('concluir_tarefa', tarefa_id=tarefa.id) }}">
-    <button type="submit" class="btn-completed">Concluir Tarefa</button>
-  </form>
-  
+  {% for tarefa in tarefas %}
+  <div class="tarefa-container">
+      <h3>{{ tarefa.titulo }}</h3>
+      <p>{{ tarefa.descricao }}</p>
+      {% if tarefa.concluida %}
+          <p><strong>Concluída por:</strong> {{ tarefa.usuario.nome }}</p>
+      {% else %}
+          <form method="POST" action="{{ url_for('concluir_tarefa', tarefa_id=tarefa.id) }}">
+              <button type="submit">Marcar como concluída</button>
+          </form>
+      {% endif %}
+  </div>
+
   <!-- Verifica se a tarefa tem uma imagem -->
   {% if tarefa.foto %}
   <img src="{{ url_for('static', filename='uploads/' + tarefa.foto) }}" alt="Foto da tarefa" style="max-width: 100%; margin-top: 10px;">
   {% endif %}
-</div>
-{% endfor %}
-
-  </main>
+  {% endfor %}
+{% endblock %}
 
   <script>
     function voltarPagina() {

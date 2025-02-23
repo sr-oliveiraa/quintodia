@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gráfico de Gastos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #28a745;
+            margin-top: 20px;
+        }
+        img {
+            max-width: 90%;
+            height: auto;
+            margin: 20px 0;
+            border: 2px solid #28a745;
+            border-radius: 8px;
+        }
+        a {
+            text-decoration: none;
+            color: #fff;
+        }
+        .btn-back {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+        .btn-back:hover {
+            background-color: #218838;
+            transform: scale(1.05);
+        }
+        .btn-back:active {
+            background-color: #1e7e34;
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body>
+    <h1>Gráfico de Gastos Mensais Detalhados</h1>
+    <img src="data:image/png;base64,{{ image_base64 }}" alt="Gráfico de Gastos">
+    <a href="{{ url_for('dashboard') }}">
+        <button class="btn-back">Voltar ao Dashboard</button>
+    </a>
+</body>
+</html>
