@@ -1,6 +1,3 @@
-Aqui está um modelo de **README.md** para a sua aplicação, considerando que ela é um sistema de gestão de moradores, casas e acesso de usuários com login:
-
----
 
 # Fraterna - Gestão de Moradores e Casas
 
