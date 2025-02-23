@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Despesas - Gerenciamento Doméstico</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: "Arial", sans-serif;
+      background: #f4f4f4;
+      color: #333;
+    }
+    header {
+      background: #28a745;
+      color: #fff;
+      padding: 15px;
+      text-align: center;
+      font-size: 24px;
+    }
+    nav {
+      display: flex;
+      justify-content: space-around;
+      background: #fff;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      padding: 10px;
+    }
+    nav a {
+      text-decoration: none;
+      color: #28a745;
+      font-weight: bold;
+      padding: 10px 15px;
+      border-radius: 5px;
+      transition: 0.3s;
+    }
+    nav a:hover {
+      background: #28a745;
+      color: #fff;
+    }
+    main {
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .form-expense {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .form-expense h3 {
+      margin-bottom: 10px;
+      color: #28a745;
+    }
+    .form-expense input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    .btn-green {
+      width: 100%;
+      background: #28a745;
+      color: #fff;
+      border: none;
+      padding: 12px;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .btn-green:hover {
+      background: #218838;
+    }
+    .card {
+      background: #fff;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .card h3 {
+      color: #28a745;
+    }
+    .card p {
+      margin: 5px 0;
+    }
+    .summary {
+      background: #fff;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .summary span {
+      color: #28a745;
+    }
+    button {
+      background-color: #28a745; /* Verde do header */
+      color: white;
+      border: none;
+      padding: 5px 15px; /* Diminui o padding para tornar o botão menor */
+      font-size: 14px; /* Fonte menor */
+      font-weight: bold;
+      border-radius: 3px; /* Arredondamento mais suave */
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Efeito quando o mouse passa por cima do botão */
+    button:hover {
+      background-color: #dc3545; /* Vermelho do hover do link */
+      transform: scale(1.05); /* Leve aumento no tamanho do botão */
+    }
+
+    /* Efeito ao clicar no botão */
+    button:active {
+      background-color: #155d27; /* Verde mais escuro */
+      transform: scale(0.98); /* Diminui um pouco o botão */
+    }
+
+    /* Adicionando uma borda para quando o botão estiver em foco */
+    button:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.5); /* Bordas verdes */
+    }
+
+    /* Responsividade para mobile */
+    @media (max-width: 600px) {
+      nav a {
+        font-size: 14px;
+        padding: 10px;
+      }
+      .card h3 {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>💰 Gerenciamento de Despesas</h1>
+  </header>
+  
+  <nav>
+    <button onclick="voltarPagina()">Voltar</button>
+    <a href="{{ url_for('dashboard') }}">🏠 Dashboard</a>
+    <a href="{{ url_for('tasks') }}">📋 Tarefas</a>
+    <a href="{{ url_for('expenses') }}">💰 Despesas</a>
+    <a href="{{ url_for('house_info') }}">🏡 Casa/Moradores</a>
+  </nav>
+  
+  <main>
+    <!-- Formulário para adicionar nova despesa -->
+    <div class="form-expense">
+      <h3>➕ Adicionar Nova Despesa</h3>
+      <form action="{{ url_for('expenses') }}" method="POST">
+        <input type="text" name="descricao" placeholder="Descrição da Despesa" required>
+        <input type="number" name="valor" placeholder="Valor (R$)" step="0.01" required>
+        <input type="date" name="data_vencimento" required>
+        <button type="submit" class="btn-green">💾 Salvar Despesa</button>
+      </form>
+    </div>
+
+    <!-- Resumo das despesas -->
+    <div class="summary">
+      <p>Total de Despesas: <span>R$ {{ total_despesas|round(2) }}</span></p>
+      <p>Moradores na Casa: <span>{{ num_moradores }}</span></p>
+      <p>Cada Pessoa Deve Pagar: <span>R$ {{ valor_por_pessoa|round(2) }}</span></p>
+    </div>
+
+    <!-- Lista de despesas -->
+    {% if despesas %}
+      {% for despesa in despesas %}
+        <div class="card">
+          <h3>📝 Despesa #{{ loop.index }}</h3>
+          <p><strong>Descrição:</strong> {{ despesa.descricao }}</p>
+          <p><strong>Valor:</strong> R$ {{ "%.2f"|format(despesa.valor) }}</p>
+          <p><strong>Vencimento:</strong> {{ despesa.data_vencimento.strftime('%d/%m/%Y') }}</p>
+          <p><strong>Status:</strong> 
+            {% if despesa.pago %}
+              <span style="color: #28a745;">Pago</span>
+            {% else %}
+              <span style="color: #dc3545;">Pendente</span>
+            {% endif %}
+          </p>
+          <!-- Link para editar a despesa -->
+          <a href="{{ url_for('editar_despesa', despesa_id=despesa.id) }}">Editar</a>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p style="text-align: center; color: #666; margin-top: 20px;">Nenhuma despesa cadastrada ainda.</p>
+    {% endif %}
+  </main>
+  
+  <!-- Página de Edição de Despesa -->
+  {% if despesa_edit %}
+    <div class="form-expense">
+      <h3>✏️ Editar Despesa</h3>
+      <form action="{{ url_for('editar_despesa') }}" method="POST">
+        <input type="hidden" name="despesa_id" value="{{ despesa_edit.id }}">
+        <input type="text" name="descricao" value="{{ despesa_edit.descricao }}" required>
+        <input type="number" name="valor" value="{{ despesa_edit.valor }}" step="0.01" required>
+        <input type="date" name="data_vencimento" value="{{ despesa_edit.data_vencimento.strftime('%Y-%m-%d') }}" required>
+        <label for="pago">
+          <input type="checkbox" name="pago" {% if despesa_edit.pago %} checked {% endif %}> Pago
+        </label>
+        <button type="submit" class="btn-green">💾 Atualizar Despesa</button>
+      </form>
+    </div>
+  {% endif %}
+
+  <script>
+    // Função para voltar à página anterior
+    function voltarPagina() {
+        window.history.back(); // Volta à página anterior
+    }
+  </script>
+</body>
+</html>

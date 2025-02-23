@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editar Despesa</title>
+</head>
+<style>/* Estilos gerais para o corpo da página */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f9;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+    
+    /* Container do formulário de edição */
+    h1 {
+        font-size: 2em;
+        text-align: center;
+        color: #333;
+    }
+    
+    .form-container {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 500px;
+        margin: auto;
+    }
+    
+    /* Estilos dos labels e inputs */
+    label {
+        font-size: 1em;
+        margin-bottom: 5px;
+        display: block;
+        color: #333;
+    }
+    
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    input[type="checkbox"] {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 1em;
+    }
+    
+    input[type="checkbox"] {
+        width: auto;
+        margin-right: 10px;
+    }
+    
+    input[type="checkbox"]:checked {
+        background-color: #4CAF50;
+    }
+    
+    /* Botão de envio */
+    button[type="submit"] {
+        width: 100%;
+        padding: 10px;
+        background-color: #007BFF;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 1em;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    
+    button[type="submit"]:hover {
+        background-color: #0056b3;
+    }
+    
+    /* Link de voltar */
+    a {
+        display: block;
+        text-align: center;
+        margin-top: 20px;
+        text-decoration: none;
+        color: #007BFF;
+    }
+    
+    a:hover {
+        text-decoration: underline;
+    }
+    </style>
+<body>
+  <h1>Editar Despesa</h1>
+
+  <!-- Formulário de Edição -->
+  <form action="{{ url_for('editar_despesa', despesa_id=despesa.id) }}" method="POST">
+    <label for="descricao">Descrição:</label>
+    <input type="text" name="descricao" value="{{ despesa.descricao }}" required><br>
+
+    <label for="valor">Valor:</label>
+    <input type="number" name="valor" value="{{ despesa.valor }}" step="0.01" required><br>
+
+    <label for="data_vencimento">Data de Vencimento:</label>
+    <input type="date" name="data_vencimento" value="{{ despesa.data_vencimento.strftime('%Y-%m-%d') }}" required><br>
+
+    <label for="pago">Pago:</label>
+    <input type="checkbox" name="pago" {% if despesa.pago %}checked{% endif %}><br>
+
+    <button type="submit">Salvar Alterações</button>
+  </form>
+
+  <a href="{{ url_for('expenses') }}">Voltar</a>
+</body>
+</html>

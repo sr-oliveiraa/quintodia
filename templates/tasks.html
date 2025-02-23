@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tarefas</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background: #C0C0C0;
+    }
+    header {
+      background-color: #28a745;
+      color: #fff;
+      padding: 15px;
+      text-align: center;
+    }
+    nav {
+      display: flex;
+      justify-content: space-around;
+      background: #fff;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    nav a {
+      flex: 1;
+      padding: 15px;
+      text-decoration: none;
+      color: #28a745;
+      font-weight: bold;
+      text-align: center;
+    }
+    nav a:hover {
+      color: #dc3545;
+    }
+    main {
+      padding: 20px;
+    }
+    .form-task {
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .form-task h3 {
+      margin-bottom: 10px;
+      color: #28a745;
+    }
+    .form-task input, .form-task textarea, .form-task input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    .btn-green {
+      width: 100%;
+      background-color: #28a745;
+      color: #fff;
+      border: none;
+      padding: 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .btn-green:hover {
+      background-color: #218838;
+    }
+    .card {
+      background: #fff;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .card h3 {
+      margin-bottom: 10px;
+      color: #28a745;
+    }
+    .card p {
+      color: #333;
+      margin-bottom: 5px;
+    }
+    .btn-completed {
+      background-color: #dc3545; /* Vermelho */
+      color: #fff;
+      border: none;
+      padding: 5px 15px;
+      font-size: 14px;
+      font-weight: bold;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .btn-completed:hover {
+      background-color: #c82333;
+    }
+    button {
+      background-color: #28a745; /* Verde do header */
+      color: white;
+      border: none;
+      padding: 5px 15px;
+      font-size: 14px;
+      font-weight: bold;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    button:hover {
+      background-color: #dc3545;
+      transform: scale(1.05);
+    }
+    button:active {
+      background-color: #155d27;
+      transform: scale(0.98);
+    }
+    button:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.5);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Tarefas</h1>
+  </header>
+  
+  <nav>
+    <button onclick="voltarPagina()">Voltar</button>
+    <a href="{{ url_for('dashboard') }}">🏠 Dashboard</a>
+    <a href="{{ url_for('tasks') }}">📋 Tarefas</a>
+    <a href="{{ url_for('expenses') }}">💰 Despesas</a>
+    <a href="{{ url_for('house_info') }}">🏡 Casa/Moradores</a>
+  </nav>
+  
+  <main>
+    <div class="form-task">
+      <h3>Adicionar Nova Tarefa</h3>
+      <form method="POST" enctype="multipart/form-data" action="{{ url_for('tasks') }}">
+        <input type="text" name="titulo" placeholder="Título da Tarefa" required>
+        <textarea name="descricao" rows="3" placeholder="Descrição da Tarefa"></textarea>
+        <input type="file" name="foto" accept="image/*">
+        <button type="submit" class="btn-green">Adicionar Tarefa</button>
+      </form>
+    </div>
+    
+    <!-- Exibição das Tarefas -->
+{% for tarefa in tarefas %}
+<div class="card">
+  <h3>{{ tarefa.titulo }}</h3>
+  <p>{{ tarefa.descricao }}</p>
+  <p>Status: <strong>{{ "Concluída" if tarefa.concluida else "Pendente" }}</strong></p>
+  <form method="POST" action="{{ url_for('concluir_tarefa', tarefa_id=tarefa.id) }}">
+    <button type="submit" class="btn-completed">Concluir Tarefa</button>
+  </form>
+  
+  <!-- Verifica se a tarefa tem uma imagem -->
+  {% if tarefa.foto %}
+  <img src="{{ url_for('static', filename='uploads/' + tarefa.foto) }}" alt="Foto da tarefa" style="max-width: 100%; margin-top: 10px;">
+  {% endif %}
+</div>
+{% endfor %}
+
+  </main>
+
+  <script>
+    function voltarPagina() {
+      window.history.back();
+    }
+  </script>
+</body>
+</html>

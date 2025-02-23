@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Casa e Moradores - Gerenciamento Doméstico</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background: #C0C0C0;
+    }
+    header {
+      background-color: #28a745;
+      color: #fff;
+      padding: 15px;
+      text-align: center;
+    }
+    nav {
+      display: flex;
+      justify-content: space-around;
+      background: #fff;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    nav a {
+      flex: 1;
+      padding: 15px;
+      text-decoration: none;
+      color: #28a745;
+      font-weight: bold;
+      text-align: center;
+    }
+    nav a:hover {
+      color: #dc3545;
+    }
+    main {
+      padding: 20px;
+    }
+    .card {
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .card h3 {
+      color: #28a745;
+      margin-bottom: 10px;
+    }
+    .resident {
+      border-bottom: 1px solid #ddd;
+      padding: 10px 0;
+    }
+    .resident:last-child {
+      border-bottom: none;
+    }
+    p {
+      margin-bottom: 8px;
+      color: #333;
+    }
+    button {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 5px 15px;
+      font-size: 14px;
+      font-weight: bold;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    button:hover {
+      background-color: #dc3545;
+      transform: scale(1.05);
+    }
+    button:active {
+      background-color: #155d27;
+      transform: scale(0.98);
+    }
+    button:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.5);
+    }
+    @media (max-width: 600px) {
+      nav a {
+        font-size: 14px;
+        padding: 10px;
+      }
+      .card h3 {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Casa e Moradores</h1>
+  </header>
+  
+  <nav>
+    <button onclick="voltarPagina()">Voltar</button>
+    <a href="{{ url_for('dashboard') }}">🏠 Dashboard</a>
+    <a href="{{ url_for('tasks') }}">📋 Tarefas</a>
+    <a href="{{ url_for('expenses') }}">💰 Despesas</a>
+    <a href="{{ url_for('house_info') }}">🏡 Casa/Moradores</a>
+  </nav>
+  
+  <main>
+    <div class="card">
+      <h3>Informações da Casa</h3>
+      <p><strong>Nome:</strong> {{ casa.nome }}</p>
+      <p><strong>Endereço:</strong> {{ casa.endereco }}</p>
+      <p><strong>Tamanho:</strong> {{ casa.tamanho }} m²</p>
+      <p><strong>Número de Pessoas:</strong> {{ casa.num_moradores }}</p>
+    </div>
+    
+    <!-- Lista de Moradores com Formulário de Edição -->
+    <div class="card">
+      <h3>Moradores</h3>
+      {% for morador in moradores %}
+      <div class="resident">
+        <form method="POST" action="{{ url_for('editar_morador', morador_id=morador.id) }}">
+          <p><strong>Nome:</strong> <input type="text" name="nome" value="{{ morador.nome }}" required></p>
+          <p><strong>Email:</strong> <input type="email" name="email" value="{{ morador.email }}" required></p>
+          <button type="submit">Salvar Alterações</button>
+        </form>
+      </div>
+      {% endfor %}
+    </div>
+
+  <!-- Formulário para Adicionar Novo Morador -->
+<div class="card">
+  <h3>Adicionar Novo Morador</h3>
+  <form method="POST" action="{{ url_for('adicionar_morador') }}">
+    <input type="text" name="nome" placeholder="Nome do Morador" required>
+    <input type="email" name="email" placeholder="Email do Morador" required>
+    <input type="password" name="senha" placeholder="Senha" required>
+    <button type="submit">Adicionar Morador</button>
+  </form>
+</div>
+
+    
+  
+  
+  </main>
+
+  <script>
+    // Função para voltar à página anterior
+    function voltarPagina() {
+        window.history.back(); // Volta à página anterior
+    }
+  </script>
+</body>
+</html>

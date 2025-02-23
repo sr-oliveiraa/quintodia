@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tela de Login</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background: #C0C0C0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      background: #fff;
+      width: 90%;
+      max-width: 400px;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .login-form {
+      display: flex;
+      flex-direction: column;
+    }
+    .login-form h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .login-form input {
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    .btn-green {
+      background-color: #28a745;
+      color: #fff;
+      border: none;
+      padding: 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    .btn-green:hover {
+      background-color: #218838;
+    }
+    .btn-red {
+      background-color: #dc3545;
+      color: #fff;
+      border: none;
+      padding: 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .btn-red:hover {
+      background-color: #c82333;
+    }
+    .separator {
+      text-align: center;
+      margin: 15px 0;
+      color: #666;
+    }
+    .register-link {
+      text-align: center;
+      margin-top: 15px;
+    }
+    .register-link a {
+      color: #007bff;
+      text-decoration: none;
+      font-size: 16px;
+    }
+    .register-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <form class="login-form" method="POST" action="{{ url_for('login') }}">
+      <h2>Login</h2>
+      <input type="email" name="email" placeholder="Email" required>
+      <input type="password" name="senha" placeholder="Senha" required>
+      <button type="submit" class="btn-green">Entrar</button>
+      
+      <div class="separator">ou</div>
+      <button type="button" class="btn-red" id="google-login">Entrar com Google</button>
+      
+      <div class="register-link">
+        <p>Ainda não tem uma conta? <a href="{{ url_for('register') }}">Registrar-se</a></p>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

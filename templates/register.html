@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tela de Registro</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; background: #C0C0C0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+    .container { background: #fff; width: 90%; max-width: 500px; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }
+    .container h2, .container h3 { text-align: center; margin-bottom: 15px; color: #333; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; margin-bottom: 5px; color: #333; }
+    .form-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; }
+    .btn-green { width: 100%; background-color: #28a745; color: #fff; border: none; padding: 12px; border-radius: 4px; cursor: pointer; font-size: 16px; margin-top: 10px; }
+    .btn-green:hover { background-color: #218838; }
+    .alert { color: red; text-align: center; margin-top: 15px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Registro de Usuário e Casa</h2>
+    <form action="{{ url_for('register') }}" method="POST" id="register-form">
+      <div class="form-group">
+        <label for="nome">Nome do Usuário</label>
+        <input type="text" id="nome" name="nome" placeholder="Seu nome" required>
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="Seu email" required>
+      </div>
+      <div class="form-group">
+        <label for="senha">Senha</label>
+        <input type="password" id="senha" name="senha" placeholder="Sua senha" required>
+      </div>
+      <div class="form-group">
+        <label for="confirmar-senha">Confirmar Senha</label>
+        <input type="password" id="confirmar-senha" name="confirmar-senha" placeholder="Confirme sua senha" required>
+      </div>
+      
+      <h3>Informações da Casa</h3>
+      <div class="form-group">
+        <label for="nome-casa">Nome da Casa</label>
+        <input type="text" id="nome-casa" name="nome-casa" placeholder="Nome da sua casa" required>
+      </div>
+      <div class="form-group">
+        <label for="endereco">Endereço</label>
+        <input type="text" id="endereco" name="endereco" placeholder="Endereço completo" required>
+      </div>
+      <div class="form-group">
+        <label for="num-pessoas">Número de Pessoas</label>
+        <input type="number" id="num-pessoas" name="num-pessoas" placeholder="Quantas pessoas moram na casa" required>
+      </div>
+      <div class="form-group">
+        <label for="tamanho">Tamanho da Casa (m²)</label>
+        <input type="number" id="tamanho" name="tamanho" placeholder="Ex: 100" required>
+      </div>
+      
+      <button type="submit" class="btn-green">Registrar</button>
+    </form>
+    <div id="alert-message" class="alert" style="display:none;"></div>
+  </div>
+</body>
+</html>
