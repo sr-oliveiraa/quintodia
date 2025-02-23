@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
-from datetime import datetime
+from datetime import datetime, timedelta
 from werkzeug.utils import secure_filename
 import matplotlib.pyplot as plt
 import io
@@ -13,6 +13,12 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///task_manager.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'sua_chave_secreta'
+
+# Dicionário para rastrear tentativas de login
+login_attempts = {}
+
+# Tempo de bloqueio após 5 tentativas falhas (exemplo: 15 minutos)
+lockout_time = timedelta(minutes=15)
 # Inicialização das extensões
 
 app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'uploads')  # Definindo o caminho da pasta "uploads"
@@ -93,17 +99,39 @@ def home():
 def login():
     if request.method == 'POST':
         data = request.form
-        usuario = Usuario.query.filter_by(email=data['email']).first()
+        email = data['email']
+        senha = data['senha']
         
-        if usuario and bcrypt.check_password_hash(usuario.senha, data['senha']):
-            session['usuario_id'] = usuario.id  # Armazena o ID do usuário na sessão
-            session['usuario_nome'] = usuario.nome  # Opcional, para exibir no template
-            return redirect(url_for('dashboard'))
+        # Verifica se o usuário está bloqueado
+        if email in login_attempts and login_attempts[email]['locked_until'] > datetime.now():
+            flash('Muitas tentativas falhas. Tente novamente mais tarde.', 'error')
+            return render_template('login.html')
         
-        flash('Credenciais inválidas', 'error')
-    
+        usuario = Usuario.query.filter_by(email=email).first()
+        
+        if usuario:
+            if bcrypt.check_password_hash(usuario.senha, senha):
+                session['usuario_id'] = usuario.id  # Armazena o ID do usuário na sessão
+                session['usuario_nome'] = usuario.nome  # Opcional, para exibir no template
+                # Resetar tentativas de login após sucesso
+                if email in login_attempts:
+                    del login_attempts[email]
+                return redirect(url_for('dashboard'))
+            else:
+                flash('Senha inválida', 'error')
+        else:
+            flash('Email não encontrado', 'error')
+        
+        # Gerenciar tentativas de login
+        if email not in login_attempts:
+            login_attempts[email] = {'attempts': 1, 'locked_until': datetime.now()}
+        else:
+            login_attempts[email]['attempts'] += 1
+            if login_attempts[email]['attempts'] >= 5:
+                login_attempts[email]['locked_until'] = datetime.now() + lockout_time
+                flash('Muitas tentativas falhas. Tente novamente mais tarde.', 'error')
+        
     return render_template('login.html')
-
 @app.route('/dashboard')
 def dashboard():
     if 'usuario_id' not in session:
@@ -438,6 +466,7 @@ def register():
         confirmar_senha = request.form['confirmar-senha']
         nome_casa = request.form['nome-casa']
         endereco = request.form['endereco']
+        num_moradores = request.form.get('num-moradores', 0)  # Use .get() para evitar KeyError
         
         if not all([nome, email, senha, confirmar_senha, nome_casa, endereco]):
             flash("Todos os campos são obrigatórios", "error")
@@ -451,7 +480,7 @@ def register():
             flash("Email já registrado", "error")
             return redirect(url_for('register'))
         
-        nova_casa = Casa(nome=nome_casa, endereco=endereco)
+        nova_casa = Casa(nome=nome_casa, endereco=endereco, num_moradores=num_moradores)
         db.session.add(nova_casa)
         db.session.commit()
         

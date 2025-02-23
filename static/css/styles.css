@@ -214,6 +214,8 @@ button:focus {
   top: 50%;
   right: 20px;
   transform: translateY(-50%);
+  display: inline-block;
+  margin-top: 10px;
 }
 
 /* Efeito de hover */

@@ -369,6 +369,64 @@ nav a:hover {
   vertical-align: middle;
 }
 
+.logout-card {
+  width: 100%;
+  max-width: 400px;
+  margin: 20px auto; /* centraliza na tela */
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* sombra consistente com os demais cards */
+  padding: 20px;
+  border-radius: 8px;
+}
+
+/* Ajusta o botão de logout para ocupar toda largura do card em telas menores */
+.logout-button {
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+  text-decoration: none;
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 768px) {
+  .logout-card {
+    padding: 15px;
+    margin: 15px auto;
+  }
+  
+  .logout-button {
+    font-size: 1em;
+  }
+}
+.logout-card {
+  width: 100%;
+  max-width: 400px;
+  margin: 20px auto; /* centraliza na tela */
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* sombra consistente com os demais cards */
+  padding: 20px;
+  border-radius: 8px;
+}
+
+/* Ajusta o botão de logout para ocupar toda largura do card em telas menores */
+.logout-button {
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+  text-decoration: none;
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 768px) {
+  .logout-card {
+    padding: 15px;
+    margin: 15px auto;
+  }
+  
+  .logout-button {
+    font-size: 1em;
+  }
+}
   </style>
   
 </head>
@@ -443,7 +501,18 @@ nav a:hover {
     </div>
 
   </main>
-  {% endblock %}
+  
+   <!-- Card para Logout -->
+   <div class="card logout-card">
+    <a href="{{ url_for('logout') }}" class="action-button logout-button">Logout</a>
+  </div>
+
+</main>
+
+
+
+{% endblock %}
+
 
   <script>
     // Função para mostrar/ocultar a seção de edição de moradores
