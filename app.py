@@ -149,23 +149,30 @@ def dashboard():
     # Buscar informações da casa associada ao usuário
     casa = Casa.query.get(usuario.casa_id)
 
-    usuario = Usuario.query.get(usuario_id)  # Obtém o usuário pelo ID
-    total_tarefas = Tarefa.query.filter_by(casa_id=usuario.casa_id).count()
-
+    # Buscar todas as tarefas da casa do usuário
+    tarefas = Tarefa.query.filter_by(casa_id=usuario.casa_id).all()
 
     # Buscar total de despesas do usuário
     total_despesas = db.session.query(
-    db.func.coalesce(db.func.sum(Despesa.valor), 0)).filter_by(casa_id=usuario.casa_id).scalar()
+        db.func.coalesce(db.func.sum(Despesa.valor), 0)).filter_by(casa_id=usuario.casa_id).scalar()
 
     # Buscar número de moradores na casa do usuário
     num_moradores = Usuario.query.filter_by(casa_id=usuario.casa_id).count() if casa else 0
 
+    # Calcular ranking de usuários por tarefas concluídas
+    ranking_usuarios = db.session.query(
+        Usuario.nome, Usuario.foto_url.label('foto_perfil_url'), db.func.count(Tarefa.id).label('tarefas_concluidas')
+    ).join(Tarefa, Tarefa.usuario_id == Usuario.id).filter(
+        Tarefa.concluida == True, Usuario.casa_id == usuario.casa_id
+    ).group_by(Usuario.id).order_by(db.func.count(Tarefa.id).desc()).all()
+
     return render_template('dashboard.html', 
                            usuario=usuario, 
-                           total_tarefas=total_tarefas,
+                           tarefas=tarefas,
                            total_despesas=total_despesas, 
                            num_moradores=num_moradores, 
-                           casa=casa)
+                           casa=casa,
+                           ranking_usuarios=ranking_usuarios)
 
 @app.route('/logout')
 def logout():
@@ -175,34 +182,36 @@ def logout():
 
 @app.route('/tasks', methods=['GET', 'POST'])
 def tasks():
-    # Verifica se o usuário está logado
     if 'usuario_id' not in session:
         return redirect(url_for('login'))
-    
-    usuario = Usuario.query.get(session['usuario_id'])
-    
-    # Ação para criar nova tarefa
+
+    usuario_id = session['usuario_id']
+    usuario = Usuario.query.get(usuario_id)
+
     if request.method == 'POST':
         titulo = request.form['titulo']
         descricao = request.form['descricao']
-        foto = None
-        
-        # Verifica se existe arquivo para upload
-        if 'foto' in request.files:
-            file = request.files['foto']
-            if file and allowed_file(file.filename):
-                foto = secure_filename(file.filename)
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], foto))
+        foto = request.files['foto']
 
-        # Cria uma nova tarefa e a adiciona ao banco de dados
-        nova_tarefa = Tarefa(titulo=titulo, descricao=descricao, foto=foto, casa_id=usuario.casa_id, concluida=False)
+        if foto and allowed_file(foto.filename):
+            filename = secure_filename(foto.filename)
+            foto.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            foto_url = filename
+        else:
+            foto_url = None
+
+        nova_tarefa = Tarefa(
+            titulo=titulo,
+            descricao=descricao,
+            foto=foto_url,
+            casa_id=usuario.casa_id
+        )
         db.session.add(nova_tarefa)
         db.session.commit()
-        flash("Tarefa adicionada com sucesso!", "success")
+        flash('Tarefa adicionada com sucesso!', 'success')
         return redirect(url_for('tasks'))
-    
-    # Buscar todas as tarefas da casa do usuário
-    tarefas = Tarefa.query.filter_by(casa_id=usuario.casa_id).all()
+
+    tarefas = Tarefa.query.filter_by(casa_id=usuario.casa_id).order_by(Tarefa.data_criacao.desc()).all()
     return render_template('tasks.html', tarefas=tarefas)
 
 @app.route('/tasks/concluir/<int:tarefa_id>', methods=['POST'])
@@ -421,6 +430,10 @@ def adicionar_morador():
         flash("Erro ao adicionar o morador. Tente novamente.", "error")
 
     return redirect(url_for('house_info'))
+
+def allowed_file(filename):
+    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/editar_morador/<int:morador_id>', methods=['GET', 'POST'])
 def editar_morador(morador_id):

@@ -10,23 +10,36 @@
     <h3>Bem-vindo, {{ usuario.nome }}!</h3>
     <p>Aqui você tem uma visão geral do gerenciamento da sua casa.</p>
   </div>
+
+    <!-- Resumo das Despesas -->
+    <div class="card">
+      <h3>Despesas do Mês</h3>
+      <p>Total de despesas: R$ {{ total_despesas }}</p>
+    </div>
+    
   
   <!-- Resumo das Tarefas -->
   <div class="card">
     <h3>Tarefas Pendentes</h3>
-    <p>Você possui {{ total_tarefas }} tarefas pendentes para hoje.</p>
+    <ul>
+      {% for tarefa in tarefas if not tarefa.concluida %}
+        <li>{{ tarefa.titulo }}</li>
+      {% endfor %}
+    </ul>
+    <p>Você possui {{ tarefas|selectattr('concluida', 'equalto', False)|list|length }} tarefas pendentes para hoje.</p>
   </div>
   
-  <!-- Resumo das Despesas -->
+  <!-- Ranking de Conclusão de Tarefas -->
   <div class="card">
-    <h3>Despesas do Mês</h3>
-    <p>Total de despesas: R$ {{ total_despesas }}</p>
-  </div>
-  
-  <!-- Resumo da Casa -->
-  <div class="card">
-    <h3>Informações da Casa</h3>
-    <p>Moradores: {{ num_moradores }} | Endereço: {{ casa.endereco }}</p>
+    <h3>Ranking de Tarefas</h3>
+    <ol>
+      {% for usuario in ranking_usuarios %}
+        <li>
+          <img src="{{ usuario.foto_perfil_url }}" alt="Foto de perfil de {{ usuario.nome }}" class="perfil-foto">
+          {{ usuario.nome }} - {{ usuario.tarefas_concluidas }} tarefas concluídas
+        </li>
+      {% endfor %}
+    </ol>
   </div>
 
   <!-- Botão para acessar o gráfico de gastos -->

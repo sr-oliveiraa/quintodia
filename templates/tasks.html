@@ -273,6 +273,7 @@ nav a:hover {
 }
   </style>
 </head>
+</head>
 <body>
   {% extends "base.html" %}
 
@@ -290,31 +291,57 @@ nav a:hover {
       <button type="submit" class="btn-green">Adicionar Tarefa</button>
     </form>
   </div>
-  
-  {% for tarefa in tarefas %}
-  <div class="tarefa-container">
-      <h3>{{ tarefa.titulo }}</h3>
-      <p>{{ tarefa.descricao }}</p>
-      {% if tarefa.concluida %}
-          <p><strong>Concluída por:</strong> {{ tarefa.usuario.nome }}</p>
-      {% else %}
-          <form method="POST" action="{{ url_for('concluir_tarefa', tarefa_id=tarefa.id) }}">
-              <button type="submit">Marcar como concluída</button>
-          </form>
-      {% endif %}
+  <div id="tarefas-container">
+    {% for tarefa in tarefas %}
+    <div class="tarefa-container">
+        <h3>{{ tarefa.titulo }}</h3>
+        <p>{{ tarefa.descricao }}</p>
+        {% if tarefa.concluida %}
+            <p><strong>Concluída por:</strong> {{ tarefa.usuario.nome }}</p>
+        {% else %}
+            <form method="POST" action="{{ url_for('concluir_tarefa', tarefa_id=tarefa.id) }}">
+                <button type="submit">Marcar como concluída</button>
+            </form>
+        {% endif %}
+        {% if tarefa.foto %}
+        <img src="{{ url_for('static', filename='uploads/' ~ tarefa.foto) }}" alt="Foto da tarefa" style="max-width: 100%; margin-top: 10px;">
+        {% endif %}
+    </div>
+    {% endfor %}
   </div>
 
-  <!-- Verifica se a tarefa tem uma imagem -->
-  {% if tarefa.foto %}
-  <img src="{{ url_for('static', filename='uploads/' + tarefa.foto) }}" alt="Foto da tarefa" style="max-width: 100%; margin-top: 10px;">
-  {% endif %}
-  {% endfor %}
-{% endblock %}
+  <button id="load-more" class="btn-green">Carregar Mais</button>
 
   <script>
-    function voltarPagina() {
-      window.history.back();
-    }
+    document.addEventListener('DOMContentLoaded', function() {
+      let tarefasPerPage = 5;
+      let currentPage = 1;
+      const tarefasContainer = document.getElementById('tarefas-container');
+      const loadMoreButton = document.getElementById('load-more');
+
+      function showTarefas() {
+        const tarefas = document.querySelectorAll('.tarefa-container');
+        tarefas.forEach((tarefa, index) => {
+          if (index < tarefasPerPage * currentPage) {
+            tarefa.style.display = 'block';
+          } else {
+            tarefa.style.display = 'none';
+          }
+        });
+
+        if (tarefasPerPage * currentPage >= tarefas.length) {
+          loadMoreButton.style.display = 'none';
+        }
+      }
+
+      loadMoreButton.addEventListener('click', function() {
+        currentPage++;
+        showTarefas();
+      });
+
+      showTarefas();
+    });
   </script>
+  {% endblock %}
 </body>
 </html>

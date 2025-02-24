@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tela de Login</title>
+  <title>QuintoDia - Tela de Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 
   <style>
     * {
@@ -12,20 +13,32 @@
       box-sizing: border-box;
     }
     body {
-      font-family: Arial, sans-serif;
-      background: #C0C0C0;
+      font-family: 'Roboto', sans-serif;
+      background: #f0f2f5;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
+      padding: 20px;
     }
-    .container {
-      background: #fff;
+    .wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
       width: 90%;
-      max-width: 400px;
+      max-width: 800px;
+      flex-wrap: wrap;
+    }
+    .container, .info-card {
+      background: #fff;
+      width: 48%;
       padding: 20px;
       border-radius: 8px;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
     .login-form {
       display: flex;
@@ -102,33 +115,73 @@
       color: #155724;
       border: 1px solid #c3e6cb;
     }
+    .info-card img {
+      max-width: 100%;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+    .info-card p {
+      font-size: 16px;
+      color: #333;
+      text-align: center;
+    }
+    .logo {
+      font-size: 32px;
+      font-weight: bold;
+      color: #28a745;
+      text-align: center;
+      margin-bottom: 20px;
+      font-family: 'Roboto', sans-serif;
+    }
+    .logo span {
+      color: #dc3545;
+    }
+    @media (max-width: 768px) {
+      .wrapper {
+        flex-direction: column;
+        align-items: center;
+      }
+      .container, .info-card {
+        width: 100%;
+        margin-bottom: 20px;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <form class="login-form" method="POST" action="{{ url_for('login') }}">
-      <h2>Login</h2>
-      
-      <!-- Exibir mensagens flash -->
-      {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-          {% for category, message in messages %}
-            <div class="flash-message {{ category }}">{{ message }}</div>
-          {% endfor %}
-        {% endif %}
-      {% endwith %}
-      
-      <input type="email" name="email" placeholder="Email" required>
-      <input type="password" name="senha" placeholder="Senha" required>
-      <button type="submit" class="btn-green">Entrar</button>
-      
-      <div class="separator">ou</div>
-      <button type="button" class="btn-red" id="google-login">Entrar com Google</button>
-      
-      <div class="register-link">
-        <p>Ainda não tem uma conta? <a href="{{ url_for('register') }}">Registrar-se</a></p>
-      </div>
-    </form>
+  <div class="wrapper">
+    <div class="info-card">
+      <img src="/static/img/7368459.jpg" alt="Imagem da Aplicação">
+      <p>Bem-vindo ao <span class="logo">Quinto<span>Dia</span></span>. <br> Aqui você pode gerenciar suas finanças e tarefas de casa forma eficiente e divertida! </p>
+    </div>
+    
+    <div class="container">
+      <form class="login-form" method="POST" action="{{ url_for('login') }}">
+        <h2>Entrar <span class="logo">Quinto<span>Dia</span></span></h2>
+        
+        <!-- Exibir mensagens flash de erro de login -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              {% if category == 'error' %}
+          <div class="flash-message {{ category }}">{{ message }}</div>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+        
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="password" name="senha" placeholder="Senha" required>
+        <button type="submit" class="btn-green">Entrar</button>
+        
+        <div class="separator">ou</div>
+        <button type="button" class="btn-red" id="google-login">Entrar com Google</button>
+        
+        <div class="register-link">
+          <p>Ainda não tem uma conta? <a href="{{ url_for('register') }}">Registrar-se</a></p>
+        </div>
+      </form>
+    </div>
   </div>
 </body>
 </html>
