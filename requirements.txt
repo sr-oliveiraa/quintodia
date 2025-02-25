@@ -8,4 +8,4 @@ matplotlib==3.5.0
 requests==2.26.0
 gunicorn==20.1.0
 psycopg2-binary==2.9.1
-groq==0.4.1
+groq==0.18.0  # Atualize para uma versão disponível
