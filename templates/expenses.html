@@ -85,6 +85,7 @@
       margin-bottom: 15px;
       border-radius: 8px;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 0.5s ease-in-out;
     }
     .card h3 {
       color: #28a745;
@@ -96,6 +97,7 @@
       background: #fff;
       padding: 15px;
       margin-top: 20px;
+      margin-bottom: 20px; /* Adicionado espaço inferior */
       border-radius: 8px;
       text-align: center;
       font-size: 18px;
@@ -139,12 +141,38 @@
 
     /* Responsividade para mobile */
     @media (max-width: 600px) {
+      header {
+        font-size: 20px;
+        padding: 10px;
+      }
       nav a {
         font-size: 14px;
         padding: 10px;
       }
-      .card h3 {
+      .form-expense, .card {
+        padding: 10px;
+      }
+      .form-expense h3, .card h3 {
         font-size: 18px;
+      }
+      .form-expense input {
+        font-size: 14px;
+      }
+      .btn-green {
+        padding: 10px;
+        font-size: 14px;
+      }
+    }
+
+    /* Animações */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
       }
     }
     .btn-back {
@@ -190,7 +218,7 @@
   <main>
     <!-- Formulário para adicionar nova despesa -->
     <div class="form-expense">
-      <h3>➕ Adicionar Nova Despesa</h3>
+      <h3>➕ Adicionar Despesa</h3>
       <form action="{{ url_for('expenses') }}" method="POST">
         <input type="text" name="descricao" placeholder="Descrição da Despesa" required>
         <input type="number" name="valor" placeholder="Valor (R$)" step="0.01" required>

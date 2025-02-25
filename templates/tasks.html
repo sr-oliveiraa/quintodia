@@ -133,6 +133,7 @@
     border-radius: 8px; /* Cantos arredondados */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombras suaves */
     transition: background-color 0.3s ease;
+    animation: fadeIn 0.5s ease-in-out;
 }
 
 .tarefa-container:hover {
@@ -271,6 +272,47 @@ nav a:hover {
   margin-right: 8px;
   vertical-align: middle;
 }
+
+/* Responsividade para mobile */
+@media (max-width: 600px) {
+  header {
+    font-size: 20px;
+    padding: 10px;
+  }
+  nav a {
+    font-size: 14px;
+    padding: 10px;
+  }
+  .form-task, .card {
+    padding: 10px;
+  }
+  .form-task h3, .card h3 {
+    font-size: 18px;
+  }
+  .form-task input, .form-task textarea, .form-task input[type="file"] {
+    font-size: 14px;
+  }
+  .btn-green {
+    padding: 10px;
+    font-size: 14px;
+  }
+  .btn-completed {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+}
+
+/* Animações */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
   </style>
 </head>
 </head>
@@ -283,7 +325,7 @@ nav a:hover {
 
   {% block content %}
   <div class="form-task">
-    <h3>Adicionar Nova Tarefa</h3>
+    <h3>Vamos adicionar uma nova tarefa?</h3>
     <form method="POST" enctype="multipart/form-data" action="{{ url_for('tasks') }}">
       <input type="text" name="titulo" placeholder="Título da Tarefa" required>
       <textarea name="descricao" rows="3" placeholder="Descrição da Tarefa"></textarea>

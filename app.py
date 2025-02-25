@@ -8,9 +8,15 @@ from werkzeug.utils import secure_filename
 import matplotlib.pyplot as plt
 import io
 import base64
+import requests  # Adicionado para fazer requisições HTTP
+import logging  # Adicionado para logs
+from groq import Groq  # Adicionado para usar a biblioteca groq
+
+# Configuração de logs
+logging.basicConfig(level=logging.INFO)
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///task_manager.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:U70fxDoJV2sMgf18@jocosely-witty-vizcacha.data-1.use1.tembo.io:5432/postgres'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'sua_chave_secreta'
 
@@ -99,39 +105,42 @@ def home():
 def login():
     if request.method == 'POST':
         data = request.form
-        email = data['email']
+        email = data['email'].strip().lower()
         senha = data['senha']
-        
-        # Verifica se o usuário está bloqueado
+
+        # Verifica se o usuário está bloqueado por tentativas falhas
         if email in login_attempts and login_attempts[email]['locked_until'] > datetime.now():
             flash('Muitas tentativas falhas. Tente novamente mais tarde.', 'error')
             return render_template('login.html')
-        
+
         usuario = Usuario.query.filter_by(email=email).first()
+
+        if usuario and bcrypt.check_password_hash(usuario.senha, senha):
+            session['usuario_id'] = usuario.id  # Armazena o ID do usuário na sessão
+            session['usuario_nome'] = usuario.nome  # Opcional, para exibir no template
+            
+            # Resetar tentativas de login após sucesso
+            login_attempts.pop(email, None)
+
+            flash('Login bem-sucedido!', 'success')
+            return redirect(url_for('dashboard'))
         
-        if usuario:
-            if bcrypt.check_password_hash(usuario.senha, senha):
-                session['usuario_id'] = usuario.id  # Armazena o ID do usuário na sessão
-                session['usuario_nome'] = usuario.nome  # Opcional, para exibir no template
-                # Resetar tentativas de login após sucesso
-                if email in login_attempts:
-                    del login_attempts[email]
-                return redirect(url_for('dashboard'))
-            else:
-                flash('Senha inválida', 'error')
-        else:
+        # Se falhar, incrementar tentativas de login
+        if not usuario:
             flash('Email não encontrado', 'error')
-        
-        # Gerenciar tentativas de login
+        elif not bcrypt.check_password_hash(usuario.senha, senha):
+            flash('Senha incorreta', 'error')
+
         if email not in login_attempts:
             login_attempts[email] = {'attempts': 1, 'locked_until': datetime.now()}
         else:
             login_attempts[email]['attempts'] += 1
             if login_attempts[email]['attempts'] >= 5:
                 login_attempts[email]['locked_until'] = datetime.now() + lockout_time
-                flash('Muitas tentativas falhas. Tente novamente mais tarde.', 'error')
-        
+                flash('Muitas tentativas falhas. Conta temporariamente bloqueada.', 'error')
+
     return render_template('login.html')
+
 @app.route('/dashboard')
 def dashboard():
     if 'usuario_id' not in session:
@@ -372,13 +381,91 @@ def house_info():
     moradores = Usuario.query.filter_by(casa_id=casa.id).all()
     return render_template('house_info.html', casa=casa, moradores=moradores)
 
+# Variável de ambiente para a chave da API
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
+def analyze_house_data(casa_id):
+    # Buscar dados da casa
+    despesas = Despesa.query.filter_by(casa_id=casa_id).all()
+    tarefas = Tarefa.query.filter_by(casa_id=casa_id).all()
+    moradores = Usuario.query.filter_by(casa_id=casa_id).all()
 
+    # Análise financeira
+    total_gasto = sum(despesa.valor for despesa in despesas)
+    despesas_pagas = sum(despesa.valor for despesa in despesas if despesa.pago)
+    despesas_pendentes = total_gasto - despesas_pagas
 
+    # Média de gastos por morador
+    total_moradores = len(moradores) if moradores else 1
+    media_gasto_por_morador = total_gasto / total_moradores
+
+    # Análise de tarefas
+    total_tarefas = len(tarefas)
+    tarefas_concluidas = sum(1 for tarefa in tarefas if tarefa.concluida)
+    tarefas_pendentes = total_tarefas - tarefas_concluidas
+    percentual_tarefas_concluidas = (tarefas_concluidas / total_tarefas * 100) if total_tarefas > 0 else 0
+
+    # Preparação dos dados
+    data = {
+        "total_gasto": total_gasto,
+        "despesas_pagas": despesas_pagas,
+        "despesas_pendentes": despesas_pendentes,
+        "media_gasto_por_morador": round(media_gasto_por_morador, 2),
+        "total_tarefas": total_tarefas,
+        "tarefas_concluidas": tarefas_concluidas,
+        "tarefas_pendentes": tarefas_pendentes,
+        "percentual_tarefas_concluidas": round(percentual_tarefas_concluidas, 2),
+        "total_moradores": total_moradores
+    }
+
+    # Enviar para API externa usando a biblioteca groq (se chave estiver definida)
+    if GROQ_API_KEY:
+        try:
+            logging.info("Enviando dados para a API externa...")
+            client = Groq(api_key=GROQ_API_KEY)
+            response = client.chat.completions.create(
+                messages=[
+                    {
+                        "role": "user",
+                        "content": f"Analise os seguintes dados da casa em português e forneça uma análise breve e organizada: {data}"
+                    }
+                ],
+                model="gemma2-9b-it",
+                temperature=0.6,
+                max_tokens=350,
+                top_p=1,
+                stream=False,
+                stop=None,
+            )
+            analysis = response.choices[0].message.content
+            logging.info("Análise da API externa concluída com sucesso.")
+            return {"insights_ia": analysis}
+        except Exception as e:
+            logging.error(f"Erro ao tentar analisar dados via API externa: {e}")
+            return {"error": "Erro ao tentar analisar dados via API externa"}
+
+    return data  # Retorna os dados locais se a API não estiver configurada
+
+@app.route('/analisar_dados')
+def analyze():
+    if 'usuario_id' not in session:
+        return redirect(url_for('login'))
+
+    usuario = Usuario.query.get(session['usuario_id'])
+    casa_id = usuario.casa_id
+
+    analysis = analyze_house_data(casa_id)
+
+    if "error" in analysis:
+        flash(analysis["error"], "error")
+        return jsonify({"error": analysis["error"]})
+
+    return jsonify(analysis)
 
 from flask import flash, redirect, url_for, request
 from flask_bcrypt import Bcrypt
 from sqlalchemy.exc import IntegrityError
+import requests
 bcrypt = Bcrypt(app)  # Se não foi feito ainda, você precisa inicializar o Bcrypt com o app Flask
 
 @app.route('/adicionar_morador', methods=['POST'])
@@ -548,4 +635,4 @@ with app.app_context():
     db.create_all()
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)

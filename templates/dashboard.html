@@ -11,12 +11,11 @@
     <p>Aqui você tem uma visão geral do gerenciamento da sua casa.</p>
   </div>
 
-    <!-- Resumo das Despesas -->
-    <div class="card">
-      <h3>Despesas do Mês</h3>
-      <p>Total de despesas: R$ {{ total_despesas }}</p>
-    </div>
-    
+  <!-- Resumo das Despesas -->
+  <div class="card">
+    <h3>Despesas do Mês</h3>
+    <p>Total de despesas: R$ {{ total_despesas }}</p>
+  </div>
   
   <!-- Resumo das Tarefas -->
   <div class="card">
@@ -35,6 +34,17 @@
     <ol>
       {% for usuario in ranking_usuarios %}
         <li>
+          <span class="ranking-numero">
+            {% if loop.index == 1 %}
+              <strong style="color: gold;">🥇</strong>
+            {% elif loop.index == 2 %}
+              <strong style="color: silver;">🥈</strong>
+            {% elif loop.index == 3 %}
+              <strong style="color: bronze;">🥉</strong>
+            {% else %}
+              {{ loop.index }}º
+            {% endif %}
+          </span>
           <img src="{{ usuario.foto_perfil_url }}" alt="Foto de perfil de {{ usuario.nome }}" class="perfil-foto">
           {{ usuario.nome }} - {{ usuario.tarefas_concluidas }} tarefas concluídas
         </li>
@@ -49,4 +59,71 @@
       <button type="button">Ver Gráfico de Gastos</button>
     </a>
   </div>
+
+ <!-- Análise de Dados da Casa -->
+<div class="card">
+  <h3>Análise Inteligente</h3>
+  <button type="button" onclick="analisarDados()">Analisar Dados</button>
+  
+  <div id="analise-resultados" style="display: none;">
+      <h4>Resultados da Análise:</h4>
+      <h5>🤖 Insights da IA:</h5>
+      <div id="ia-analise-texto" style="font-style: italic; color: #555; white-space: pre-wrap; background: #f9f9f9; padding: 10px; border-radius: 5px;"></div>
+  </div>
+
+  <div id="loading" style="display: none; text-align: center; margin-top: 20px;">
+    <img src="{{ url_for('static', filename='img/loading.gif') }}" alt="Carregando..." style="width: 50px; height: 50px;">
+    <p>Carregando análise, por favor aguarde...</p>
+  </div>
+</div>
+
+<style>
+  /* Animações */
+  .card {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+
+<script>
+function analisarDados() {
+    const loading = document.getElementById('loading');
+    const analiseResultados = document.getElementById('analise-resultados');
+    const iaAnaliseTexto = document.getElementById('ia-analise-texto');
+
+    loading.style.display = 'block';
+    analiseResultados.style.display = 'none';
+
+    fetch('{{ url_for("analyze") }}')
+        .then(response => response.json())
+        .then(data => {
+            loading.style.display = 'none';
+
+            if (data.error) {
+                alert(data.error);
+                return;
+            }
+
+            iaAnaliseTexto.innerHTML = data.insights_ia.replace(/\n/g, '<br>').replace(/\*/g, '');  // Remove asteriscos e formata quebras de linha
+
+            analiseResultados.style.display = 'block';
+        })
+        .catch(error => {
+            loading.style.display = 'none';
+            console.error('Erro ao analisar dados:', error);
+            alert('Erro ao analisar dados. Tente novamente mais tarde.');
+        });
+}
+</script>
+
 {% endblock %}

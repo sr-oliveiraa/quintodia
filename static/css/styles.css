@@ -1,3 +1,4 @@
+/* Estilo geral */
 body {
   font-family: 'Arial', sans-serif;
   background: #C0C0C0;
@@ -194,6 +195,13 @@ button:focus {
   .icon {
     width: 25px;
     height: 25px;
+  }
+  
+  /* Ajuste para ícones na barra de navegação em dispositivos móveis */
+  nav a .icon {
+    display: inline-block;
+    margin-right: 5px;
+    vertical-align: middle;
   }
 }
 

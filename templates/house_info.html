@@ -89,6 +89,7 @@
       margin-bottom: 20px;
       border-radius: 8px;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 0.5s ease-in-out;
     }
   
     h3 {
@@ -427,6 +428,44 @@ nav a:hover {
     font-size: 1em;
   }
 }
+
+  /* Responsividade para mobile */
+  @media (max-width: 600px) {
+    header {
+      font-size: 20px;
+      padding: 10px;
+    }
+    nav a, nav button {
+      font-size: 14px;
+      padding: 10px;
+    }
+    .card {
+      padding: 10px;
+    }
+    h3 {
+      font-size: 18px;
+    }
+    .resident-info {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .profile-pic {
+      width: 40px;
+      height: 40px;
+    }
+  }
+
+  /* Animações */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
   </style>
   
 </head>

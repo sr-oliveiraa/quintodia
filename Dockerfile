@@ -20,4 +20,4 @@ EXPOSE 5000
 ENV PYTHONUNBUFFERED=1
 
 # Comando para iniciar a aplicação Flask
-CMD ["python", "app.py"]
+CMD ["python", "appmongo.py"]

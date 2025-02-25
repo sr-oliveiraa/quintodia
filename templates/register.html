@@ -58,7 +58,36 @@
       
       <button type="submit" class="btn-green">Registrar</button>
     </form>
-    <div id="alert-message" class="alert" style="display:none;"></div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div id="alert-message" class="alert">
+                {% for category, message in messages %}
+                    <p class="{{ category }}">{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
   </div>
+  <script>
+    document.getElementById('register-form').addEventListener('submit', function(event) {
+      var senha = document.getElementById('senha').value;
+      var confirmarSenha = document.getElementById('confirmar-senha').value;
+      var alertMessage = document.getElementById('alert-message');
+
+      var senhaRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+
+      if (!senhaRegex.test(senha)) {
+        alertMessage.style.display = 'block';
+        alertMessage.textContent = 'A senha deve ter pelo menos 8 caracteres, incluindo letras e números.';
+        event.preventDefault();
+      } else if (senha !== confirmarSenha) {
+        alertMessage.style.display = 'block';
+        alertMessage.textContent = 'As senhas não coincidem.';
+        event.preventDefault();
+      } else {
+        alertMessage.style.display = 'none';
+      }
+    });
+  </script>
 </body>
 </html>
