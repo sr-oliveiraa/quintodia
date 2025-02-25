@@ -1,23 +1,20 @@
-# Use a imagem oficial do Python como base
-FROM python:3.9-slim
+# Use a imagem oficial do Node.js como base
+FROM node:14
 
 # Defina o diretório de trabalho dentro do contêiner
-WORKDIR /app
+WORKDIR /usr/src/app
 
-# Copie o arquivo requirements.txt para o diretório de trabalho
-COPY requirements.txt .
+# Copie o package.json e o package-lock.json para o diretório de trabalho
+COPY package*.json ./
 
-# Instale as dependências do Python
-RUN pip install --no-cache-dir -r requirements.txt
+# Instale as dependências da aplicação
+RUN npm install
 
 # Copie o restante do código da aplicação para o diretório de trabalho
 COPY . .
 
-# Exponha a porta em que a aplicação Flask será executada
-EXPOSE 5000
+# Exponha a porta que a aplicação irá rodar
+EXPOSE 3000
 
-# Defina a variável de ambiente para desativar o buffer de saída
-ENV PYTHONUNBUFFERED=1
-
-# Comando para iniciar a aplicação Flask
-CMD ["python", "appmongo.py"]
+# Defina o comando para iniciar a aplicação
+CMD ["npm", "start"]
