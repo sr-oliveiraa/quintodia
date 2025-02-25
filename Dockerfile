@@ -13,6 +13,9 @@ RUN npm install
 # Copie o restante do código da aplicação para o diretório de trabalho
 COPY . .
 
+# Copie o arquivo .env para o diretório de trabalho
+COPY .env ./
+
 # Exponha a porta que a aplicação irá rodar
 EXPOSE 3000
 
