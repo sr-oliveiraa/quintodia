@@ -16,9 +16,9 @@ from groq import Groq  # Adicionado para usar a biblioteca groq
 logging.basicConfig(level=logging.INFO)
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:U70fxDoJV2sMgf18@jocosely-witty-vizcacha.data-1.use1.tembo.io:5432/postgres'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'postgresql://postgres:U70fxDoJV2sMgf18@jocosely-witty-vizcacha.data-1.use1.tembo.io:5432/postgres')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.secret_key = 'sua_chave_secreta'
+app.secret_key = os.getenv('SECRET_KEY', 'sua_chave_secreta')
 
 # Dicionário para rastrear tentativas de login
 login_attempts = {}
@@ -635,4 +635,4 @@ with app.app_context():
     db.create_all()
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=int(os.getenv('PORT', 5000)), debug=True)
