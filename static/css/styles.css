@@ -11,7 +11,7 @@ body {
 }
 
 header {
-  background-color: #28a745;
+  background-color: #4A6B5C;
   color: #fff;
   padding: 20px;
   text-align: center;
@@ -34,7 +34,7 @@ nav a {
   flex: 1;
   padding: 15px;
   text-decoration: none;
-  color: #28a745;
+  color: #4A6B5C;
   font-weight: bold;
   text-align: center;
   transition: color 0.3s;
@@ -61,7 +61,7 @@ main {
 }
 
 h3 {
-  color: #28a745;
+  color: #4A6B5C;
   margin-bottom: 15px;
   font-size: 1.5em;
 }
@@ -84,7 +84,7 @@ nav a {
   flex: 1;
   padding: 15px;
   text-decoration: none;
-  color: #28a745;
+  color: #4A6B5C;
   font-weight: bold;
   text-align: center;
 }
@@ -108,7 +108,7 @@ main {
 
 .card h3 {
   margin-bottom: 10px;
-  color: #28a745;
+  color: #4A6B5C;
 }
 
 .card p {
@@ -116,7 +116,7 @@ main {
 }
 
 footer {
-  background: #28a745;
+  background: #4A6B5C;
   color: #fff;
   text-align: center;
   padding: 10px;
@@ -127,7 +127,7 @@ footer {
 
 /* Estilo para o botão Voltar */
 button {
-  background-color: #28a745; /* Verde do header */
+  background-color: #4A6B5C; /* Verde do header */
   color: white;
   border: none;
   padding: 5px 15px; /* Diminui o padding para tornar o botão menor */
@@ -154,7 +154,7 @@ button:active {
 /* Adicionando uma borda para quando o botão estiver em foco */
 button:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.5); /* Bordas verdes */
+  box-shadow: 0 0 0 3px rgba(74, 107, 92, 0.5); /* Bordas verdes */
 }
 
 /* Responsividade para mobile */
