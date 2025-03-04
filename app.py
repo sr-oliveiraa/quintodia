@@ -91,7 +91,7 @@ class Despesa(db.Model):
     valor = db.Column(db.Float, nullable=False)
     data_vencimento = db.Column(db.DateTime, nullable=False)
     pago = db.Column(db.Boolean, default=False)
-
+    
     casa_id = db.Column(db.Integer, db.ForeignKey('casa.id'), nullable=False)  # Relacionado à Casa
 
 
@@ -161,9 +161,14 @@ def dashboard():
     # Buscar todas as tarefas da casa do usuário
     tarefas = Tarefa.query.filter_by(casa_id=usuario.casa_id).all()
 
-    # Buscar total de despesas do usuário
+    # Buscar total de despesas do usuário nos últimos 30 dias
+    data_limite = datetime.utcnow() - timedelta(days=30)
     total_despesas = db.session.query(
-        db.func.coalesce(db.func.sum(Despesa.valor), 0)).filter_by(casa_id=usuario.casa_id).scalar()
+        db.func.coalesce(db.func.sum(Despesa.valor), 0)
+    ).filter(
+        Despesa.casa_id == usuario.casa_id,
+        Despesa.data_vencimento >= data_limite
+    ).scalar()
 
     # Buscar número de moradores na casa do usuário
     num_moradores = Usuario.query.filter_by(casa_id=usuario.casa_id).count() if casa else 0
@@ -234,6 +239,14 @@ def concluir_tarefa(tarefa_id):
     if tarefa and tarefa.casa_id == usuario.casa_id:
         tarefa.concluida = True
         tarefa.usuario_id = usuario.id  # Registra quem concluiu
+
+        # Anexar imagem de prova, se fornecida
+        foto_prova = request.files.get('foto_prova')
+        if foto_prova and allowed_file(foto_prova.filename):
+            filename = secure_filename(foto_prova.filename)
+            foto_prova.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            tarefa.foto = filename
+
         db.session.commit()
         flash(f"Tarefa '{tarefa.titulo}' concluída por {usuario.nome}!", "success")
     else:
@@ -281,7 +294,7 @@ def expenses():
         pago = 'pago' in request.form  # Verifica se o campo "pago" foi marcado
 
         despesa = Despesa.query.get(despesa_id)
-        if despesa and despesa.usuario_id == usuario.id:
+        if despesa and despesa.casa_id == usuario.casa_id:
             despesa.descricao = descricao
             despesa.valor = valor
             despesa.data_vencimento = data_vencimento
@@ -293,11 +306,13 @@ def expenses():
         
         return redirect(url_for('expenses'))
 
-    # Buscar todas as despesas do usuário
-    despesas = Despesa.query.filter_by(casa_id=usuario.casa_id).all()
+    # Paginação
+    page = request.args.get('page', 1, type=int)
+    per_page = 6  # Número de despesas por página
+    despesas_paginadas = Despesa.query.filter_by(casa_id=usuario.casa_id).order_by(Despesa.data_vencimento.desc()).paginate(page=page, per_page=per_page)
 
-    # Somar o total de despesas
-    total_despesas = sum(d.valor for d in despesas)
+    # Somar o total de despesas não pagas
+    total_despesas = sum(d.valor for d in Despesa.query.filter_by(casa_id=usuario.casa_id).all() if not d.pago)
 
     # Buscar número de moradores na casa
     num_moradores = Usuario.query.filter_by(casa_id=usuario.casa_id).count()
@@ -306,12 +321,11 @@ def expenses():
     valor_por_pessoa = total_despesas / num_moradores if num_moradores > 0 else 0
 
     return render_template('expenses.html', 
-                           despesas=despesas, 
+                           despesas=despesas_paginadas.items, 
                            total_despesas=total_despesas, 
                            num_moradores=num_moradores, 
-                           valor_por_pessoa=valor_por_pessoa)
-
-
+                           valor_por_pessoa=valor_por_pessoa,
+                           pagination=despesas_paginadas)
 
 @app.route('/editar_despesa/<int:despesa_id>', methods=['GET', 'POST'])
 def editar_despesa(despesa_id):
@@ -610,17 +624,15 @@ def grafico_gastos():
     valores = [despesa.valor for despesa in despesas]
     descricoes = [despesa.descricao for despesa in despesas]
 
-    # Criar gráfico
-    plt.figure(figsize=(10, 5))
-    plt.plot(datas, valores, marker='o', linestyle='-', color='b', label='Valor das Despesas')
-    for i, descricao in enumerate(descricoes):
-        plt.annotate(descricao, (datas[i], valores[i]), textcoords="offset points", xytext=(0,10), ha='center')
-    plt.xlabel('Data de Vencimento')
-    plt.ylabel('Valor (R$)')
-    plt.title('Gastos Mensais Detalhados')
-    plt.xticks(rotation=45)
-    plt.legend()
-    plt.tight_layout()
+    # Preparar dados para o gráfico de pizza
+    categorias = list(set(descricoes))
+    valores_por_categoria = [sum(despesa.valor for despesa in despesas if despesa.descricao == categoria) for categoria in categorias]
+
+    # Criar gráfico de pizza
+    plt.figure(figsize=(10, 7))
+    plt.pie(valores_por_categoria, labels=categorias, autopct='%1.1f%%', startangle=140, colors=plt.cm.Paired.colors)
+    plt.title('Distribuição de Gastos por Categoria')
+    plt.axis('equal')  # Assegura que o gráfico seja desenhado como um círculo
 
     # Salvar gráfico em um buffer
     buf = io.BytesIO()

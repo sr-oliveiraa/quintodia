@@ -16,7 +16,7 @@
       color: #333;
     }
     header {
-      background: #28a745;
+      background: #4A6B5C;
       color: #fff;
       padding: 15px;
       text-align: center;
@@ -31,14 +31,14 @@
     }
     nav a {
       text-decoration: none;
-      color: #28a745;
+      color: #4A6B5C;
       font-weight: bold;
       padding: 10px 15px;
       border-radius: 5px;
       transition: 0.3s;
     }
     nav a:hover {
-      background: #28a745;
+      background: #4A6B5C;
       color: #fff;
     }
     main {
@@ -55,7 +55,7 @@
     }
     .form-expense h3 {
       margin-bottom: 10px;
-      color: #28a745;
+      color: #4A6B5C;
     }
     .form-expense input {
       width: 100%;
@@ -65,9 +65,17 @@
       border-radius: 5px;
       font-size: 16px;
     }
+    .form-expense select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+    }
     .btn-green {
       width: 100%;
-      background: #28a745;
+      background: #4A6B5C;
       color: #fff;
       border: none;
       padding: 12px;
@@ -77,7 +85,7 @@
       transition: 0.3s;
     }
     .btn-green:hover {
-      background: #218838;
+      background: #3E5A4E;
     }
     .card {
       background: #fff;
@@ -88,7 +96,7 @@
       animation: fadeIn 0.5s ease-in-out;
     }
     .card h3 {
-      color: #28a745;
+      color: #4A6B5C;
     }
     .card p {
       margin: 5px 0;
@@ -109,7 +117,7 @@
       color: #28a745;
     }
     button {
-      background-color: #28a745; /* Verde do header */
+      background-color: #4A6B5C; /* Verde do header */
       color: white;
       border: none;
       padding: 5px 15px; /* Diminui o padding para tornar o botão menor */
@@ -136,7 +144,7 @@
     /* Adicionando uma borda para quando o botão estiver em foco */
     button:focus {
       outline: none;
-      box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.5); /* Bordas verdes */
+      box-shadow: 0 0 0 3px rgba(74, 107, 92, 0.5); /* Bordas verdes */
     }
 
     /* Responsividade para mobile */
@@ -176,7 +184,7 @@
       }
     }
     .btn-back {
-      background-color: #28a745;
+      background-color: #4A6B5C;
       color: white;
       border: none;
       padding: 10px 20px;
@@ -191,7 +199,7 @@
       left: 20px;
     }
     .btn-back:hover {
-      background-color: #218838;
+      background-color: #3E5A4E;
       transform: scale(1.05);
     }
     .btn-back:active {
@@ -204,6 +212,41 @@
   margin-right: 8px;
   vertical-align: middle;
 }
+    .btn-pagination {
+    background-color: #4A6B5C;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin: 5px;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-pagination:hover {
+    background-color: #3E5A4E;
+    transform: scale(1.05);
+  }
+
+  .btn-pagination:active {
+    background-color: #1e7e34;
+    transform: scale(0.98);
+  }
+
+  .btn-pagination:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(74, 107, 92, 0.5);
+  }
+
+  .pagination {
+    text-align: center;
+    margin-top: 20px;
+  }
   </style>
 </head>
 <body>
@@ -223,6 +266,7 @@
         <input type="text" name="descricao" placeholder="Descrição da Despesa" required>
         <input type="number" name="valor" placeholder="Valor (R$)" step="0.01" required>
         <input type="date" name="data_vencimento" required>
+        
         <button type="submit" class="btn-green">💾 Salvar Despesa</button>
       </form>
     </div>
@@ -237,22 +281,47 @@
     <!-- Lista de despesas -->
     {% if despesas %}
       {% for despesa in despesas %}
-        <div class="card">
-          <h3>📝 Despesa #{{ loop.index }}</h3>
-          <p><strong>Descrição:</strong> {{ despesa.descricao }}</p>
-          <p><strong>Valor:</strong> R$ {{ "%.2f"|format(despesa.valor) }}</p>
-          <p><strong>Vencimento:</strong> {{ despesa.data_vencimento.strftime('%d/%m/%Y') }}</p>
-          <p><strong>Status:</strong> 
-            {% if despesa.pago %}
-              <span style="color: #28a745;">Pago</span>
-            {% else %}
-              <span style="color: #dc3545;">Pendente</span>
-            {% endif %}
-          </p>
-          <!-- Link para editar a despesa -->
-          <a href="{{ url_for('editar_despesa', despesa_id=despesa.id) }}">Editar</a>
-        </div>
+      <div class="card">
+        <h3>
+        {% if despesa.categoria == 'alimentacao' %}
+          🍽️
+        {% elif despesa.categoria == 'luz' %}
+          💡
+        {% elif despesa.categoria == 'agua' %}
+          💧
+        {% elif despesa.categoria == 'gas' %}
+          🔥
+        {% elif despesa.categoria == 'internet' %}
+          🌐
+        {% else %}
+          📝
+        {% endif %}
+        {{ despesa.descricao }}
+        </h3>
+        <p><strong>Descrição:</strong> {{ despesa.descricao }}</p>
+        <p><strong>Valor:</strong> R$ {{ "%.2f"|format(despesa.valor) }}</p>
+        <p><strong>Vencimento:</strong> {{ despesa.data_vencimento.strftime('%d/%m/%Y') }}</p>
+        <p><strong>Status:</strong> 
+        {% if despesa.pago %}
+          <span style="color: #28a745;">Pago</span>
+        {% else %}
+          <span style="color: #dc3545;">Pendente</span>
+        {% endif %}
+        </p>
+        <!-- Link para editar a despesa -->
+        <a href="{{ url_for('editar_despesa', despesa_id=despesa.id) }}">Editar</a>
+      </div>
       {% endfor %}
+      
+      <!-- Paginação -->
+      <div class="pagination">
+        {% if pagination.has_prev %}
+          <a href="{{ url_for('expenses', page=pagination.prev_num) }}" class="btn-pagination">Anterior</a>
+        {% endif %}
+        {% if pagination.has_next %}
+          <a href="{{ url_for('expenses', page=pagination.next_num) }}" class="btn-pagination">Próximo</a>
+        {% endif %}
+      </div>
     {% else %}
       <p style="text-align: center; color: #666; margin-top: 20px;">Nenhuma despesa cadastrada ainda.</p>
     {% endif %}
