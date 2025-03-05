@@ -1,5 +1,5 @@
 
-# Fraterna - Gestão de Moradores e Casas
+#QuintoDia - Gestão de Moradores e Casas
 
 Fraterna é uma aplicação web desenvolvida para gerenciamento de casas e moradores. Ela permite adicionar novos moradores, associar-los a uma casa, além de permitir que os moradores façam login para acessar informações relacionadas à casa à qual pertencem.
 
