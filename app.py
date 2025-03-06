@@ -11,6 +11,9 @@ import base64
 import requests  # Adicionado para fazer requisições HTTP
 import logging  # Adicionado para logs
 from groq import Groq  # Adicionado para usar a biblioteca groq
+import uuid  # Adicionado para gerar nomes únicos para as fotos
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
+import random
 
 # Configuração de logs
 logging.basicConfig(level=logging.INFO)
@@ -19,6 +22,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'postgresql://postgres:U70fxDoJV2sMgf18@jocosely-witty-vizcacha.data-1.use1.tembo.io:5432/postgres')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = os.getenv('SECRET_KEY', 'sua_chave_secreta')
+app.config['SECURITY_PASSWORD_SALT'] = os.getenv('SECURITY_PASSWORD_SALT', 'seu_salt_de_seguranca')
 
 # Dicionário para rastrear tentativas de login
 login_attempts = {}
@@ -47,6 +51,126 @@ migrate = Migrate(app, db)
 def allowed_file(filename):
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+# Função para gerar um nome de arquivo único
+def generate_unique_filename(filename):
+    ext = filename.rsplit('.', 1)[1].lower()
+    unique_filename = f"{uuid.uuid4().hex}.{ext}"
+    return unique_filename
+
+s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+
+def send_reset_email(user_email):
+    token = s.dumps(user_email, salt=app.config['SECURITY_PASSWORD_SALT'])
+    reset_url = url_for('reset_with_token', token=token, _external=True)
+    
+    # Configuração do Flask-Mail para Gmail
+    app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+    app.config['MAIL_PORT'] = 587
+    app.config['MAIL_USE_TLS'] = True
+    app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME', 'cod.trab@gmail.com')
+    app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD', 'egfl xxbh zwmp eloo')
+    app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER', 'cod.trab@gmail.com')
+
+    mail = Mail(app)
+
+    # Envio do email com o link de reset
+    msg = Message('Redefinição de Senha', recipients=[user_email])
+    msg.body = f'Clique no link para redefinir sua senha: {reset_url}'
+    try:
+        mail.send(msg)
+        print(f'Clique no link para redefinir sua senha: {reset_url}')
+    except Exception as e:
+        print(f'Erro ao enviar email: {e}')
+        flash('Erro ao enviar email de recuperação de senha. Tente novamente mais tarde.', 'error')
+
+def send_verification_email(user_email, verification_code):
+    # Configuração do Flask-Mail para Gmail
+    app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+    app.config['MAIL_PORT'] = 587
+    app.config['MAIL_USE_TLS'] = True
+    app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME', 'cod.trab@gmail.com')
+    app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD', 'egfl xxbh zwmp eloo')
+    app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER', 'cod.trab@gmail.com')
+
+    mail = Mail(app)
+
+    # Envio do email com o código de verificação
+    msg = Message('Código de Verificação', recipients=[user_email])
+    msg.body = f'Seu código de verificação é: {verification_code}'
+    try:
+        mail.send(msg)
+        print(f'Código de verificação enviado para: {user_email}')
+    except Exception as e:
+        print(f'Erro ao enviar email: {e}')
+        flash('Erro ao enviar email de verificação. Tente novamente mais tarde.', 'error')
+
+@app.route('/verificar_email', methods=['GET', 'POST'])
+def verificar_email():
+    if request.method == 'POST':
+        email = request.form['email']
+        verification_code = request.form['verification_code']
+        stored_code = session.get('verification_code')
+        if stored_code and verification_code == stored_code:
+            flash('Email verificado com sucesso!', 'success')
+            return redirect(url_for('login'))
+        else:
+            flash('Código de verificação inválido.', 'error')
+    return render_template('verificar_email.html')
+
+@app.route('/enviar_codigo_verificacao', methods=['POST'])
+def enviar_codigo_verificacao():
+    email = request.form['email']
+    user = Usuario.query.filter_by(email=email).first()
+    if user:
+        verification_code = str(random.randint(100000, 999999))
+        session['verification_code'] = verification_code
+        send_verification_email(user.email, verification_code)
+        flash('Um código de verificação foi enviado para seu email.', 'success')
+        return redirect(url_for('verificar_email'))
+    else:
+        flash('Email não encontrado.', 'error')
+        return redirect(url_for('register'))
+
+@app.route('/recuperar_senha', methods=['GET', 'POST'])
+def recuperar_senha():
+    if request.method == 'POST':
+        email = request.form['email']
+        user = Usuario.query.filter_by(email=email).first()
+        if user:
+            send_reset_email(user.email)
+            flash('Um link de recuperação de senha foi enviado para seu email.', 'success')
+        else:
+            flash('Email não encontrado.', 'error')
+    return render_template('recuperar_senha.html')
+
+@app.route('/reset/<token>', methods=['GET', 'POST'])
+def reset_with_token(token):
+    try:
+        email = s.loads(token, salt=app.config['SECURITY_PASSWORD_SALT'], max_age=3600)
+    except (SignatureExpired, BadSignature):
+        flash('O link de recuperação de senha é inválido ou expirou.', 'error')
+        return redirect(url_for('recuperar_senha'))
+
+    if request.method == 'POST':
+        senha = request.form['senha']
+        confirmar_senha = request.form['confirmar_senha']
+        if senha != confirmar_senha:
+            flash('As senhas não coincidem.', 'error')
+            return redirect(url_for('reset_with_token', token=token))
+        
+        user = Usuario.query.filter_by(email=email).first()
+        if user:
+            hashed_password = bcrypt.generate_password_hash(senha).decode('utf-8')
+            user.senha = hashed_password
+            db.session.commit()
+            flash('Sua senha foi atualizada com sucesso!', 'success')
+            return redirect(url_for('login'))
+        else:
+            flash('Usuário não encontrado.', 'error')
+            return redirect(url_for('recuperar_senha'))
+
+    return render_template('reset_senha.html', token=token)
 
 class Casa(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -208,7 +332,7 @@ def tasks():
         foto = request.files['foto']
 
         if foto and allowed_file(foto.filename):
-            filename = secure_filename(foto.filename)
+            filename = generate_unique_filename(foto.filename)
             foto.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             foto_url = filename
         else:
@@ -243,7 +367,7 @@ def concluir_tarefa(tarefa_id):
         # Anexar imagem de prova, se fornecida
         foto_prova = request.files.get('foto_prova')
         if foto_prova and allowed_file(foto_prova.filename):
-            filename = secure_filename(foto_prova.filename)
+            filename = generate_unique_filename(foto_prova.filename)
             foto_prova.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             tarefa.foto = filename
 
@@ -480,6 +604,7 @@ from flask import flash, redirect, url_for, request
 from flask_bcrypt import Bcrypt
 from sqlalchemy.exc import IntegrityError
 import requests
+from flask_mail import Mail, Message
 bcrypt = Bcrypt(app)  # Se não foi feito ainda, você precisa inicializar o Bcrypt com o app Flask
 
 @app.route('/adicionar_morador', methods=['POST'])
@@ -513,7 +638,7 @@ def adicionar_morador():
 
     # Salvar a foto no servidor
     if foto and allowed_file(foto.filename):
-        filename = secure_filename(foto.filename)
+        filename = generate_unique_filename(foto.filename)
         foto.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         foto_url = url_for('uploaded_file', filename=filename)
     else:
@@ -560,7 +685,7 @@ def editar_morador(morador_id):
 
         # Atualiza a foto do morador, se fornecida
         if foto and allowed_file(foto.filename):
-            filename = secure_filename(foto.filename)
+            filename = generate_unique_filename(foto.filename)
             foto.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             morador.foto_url = url_for('uploaded_file', filename=filename)
 
@@ -574,37 +699,59 @@ def editar_morador(morador_id):
 @app.route('/register', methods=['POST', 'GET'])
 def register():
     if request.method == 'POST':
-        nome = request.form['nome']
-        email = request.form['email']
-        senha = request.form['senha']
-        confirmar_senha = request.form['confirmar-senha']
-        nome_casa = request.form['nome-casa']
-        endereco = request.form['endereco']
-        num_moradores = request.form.get('num-moradores', 0)  # Use .get() para evitar KeyError
+        if 'send_code' in request.form:
+            email = request.form['email']
+            user = Usuario.query.filter_by(email=email).first()
+            if user:
+                flash("Email já registrado", "error")
+                return redirect(url_for('register'))
+            verification_code = str(random.randint(100000, 999999))
+            session['verification_code'] = verification_code
+            send_verification_email(email, verification_code)
+            flash('Um código de verificação foi enviado para seu email.', 'success')
+            return render_template('register.html', email=email, code_sent=True)
         
-        if not all([nome, email, senha, confirmar_senha, nome_casa, endereco]):
-            flash("Todos os campos são obrigatórios", "error")
-            return redirect(url_for('register'))
+        elif 'verify_code' in request.form:
+            email = request.form['email']
+            verification_code = request.form['verification_code']
+            stored_code = session.get('verification_code')
+            if stored_code and verification_code == stored_code:
+                flash('Email verificado com sucesso!', 'success')
+                return render_template('register.html', email=email, email_verified=True)
+            else:
+                flash('Código de verificação inválido.', 'error')
+                return render_template('register.html', email=email, code_sent=True)
         
-        if senha != confirmar_senha:
-            flash("As senhas não coincidem", "error")
-            return redirect(url_for('register'))
-        
-        if Usuario.query.filter_by(email=email).first():
-            flash("Email já registrado", "error")
-            return redirect(url_for('register'))
-        
-        nova_casa = Casa(nome=nome_casa, endereco=endereco, num_moradores=num_moradores)
-        db.session.add(nova_casa)
-        db.session.commit()
-        
-        hashed_password = bcrypt.generate_password_hash(senha).decode('utf-8')
-        novo_usuario = Usuario(nome=nome, email=email, senha=hashed_password, casa_id=nova_casa.id)
-        db.session.add(novo_usuario)
-        db.session.commit()
-        
-        flash("Cadastro realizado com sucesso! Faça login para continuar.", "success")
-        return redirect(url_for('login'))
+        else:
+            nome = request.form['nome']
+            email = request.form['email']
+            senha = request.form['senha']
+            confirmar_senha = request.form['confirmar-senha']
+            nome_casa = request.form['nome-casa']
+            
+            if not all([nome, email, senha, confirmar_senha, nome_casa]):
+                flash("Todos os campos são obrigatórios", "error")
+                return redirect(url_for('register'))
+            
+            if senha != confirmar_senha:
+                flash("As senhas não coincidem", "error")
+                return redirect(url_for('register'))
+            
+            if Usuario.query.filter_by(email=email).first():
+                flash("Email já registrado", "error")
+                return redirect(url_for('register'))
+            
+            nova_casa = Casa(nome=nome_casa)
+            db.session.add(nova_casa)
+            db.session.commit()
+            
+            hashed_password = bcrypt.generate_password_hash(senha).decode('utf-8')
+            novo_usuario = Usuario(nome=nome, email=email, senha=hashed_password, casa_id=nova_casa.id)
+            db.session.add(novo_usuario)
+            db.session.commit()
+            
+            flash("Cadastro realizado com sucesso! Faça login para continuar.", "success")
+            return redirect(url_for('login'))
     
     return render_template('register.html')
 
