@@ -259,3 +259,31 @@ button:focus {
     margin-right: 10px;
     vertical-align: middle;
 }
+.install-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 12px 24px;
+  background-color: #4A6B5C;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+}
+
+.install-button:hover {
+  background-color: #3E5A4E;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+}
+
+#pwa-install-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}

@@ -1,0 +1,14 @@
+Flask
+Flask-WTF
+Flask-Migrate
+Flask-SQLAlchemy
+Flask-Bcrypt
+Werkzeug
+matplotlib
+requests
+gunicorn
+psycopg2-binary
+groq
+SQLAlchemy
+python-dotenv
+Flask-Mail

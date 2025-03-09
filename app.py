@@ -14,6 +14,7 @@ from groq import Groq  # Adicionado para usar a biblioteca groq
 import uuid  # Adicionado para gerar nomes únicos para as fotos
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 import random
+from flask_talisman import Talisman
 
 # Configuração de logs
 logging.basicConfig(level=logging.INFO)
@@ -46,6 +47,9 @@ def uploaded_file(filename):
 bcrypt = Bcrypt(app)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+
+# Configuração de segurança com Talisman
+talisman = Talisman(app, content_security_policy=None)
 
 # Função para verificar se o arquivo é permitido
 def allowed_file(filename):
@@ -789,6 +793,14 @@ def grafico_gastos():
     buf.close()
 
     return render_template('grafico_gastos.html', image_base64=image_base64)
+
+@app.route('/manifest.json')
+def manifest():
+    return send_from_directory(os.path.join(app.root_path, 'static'), 'manifest.json')
+
+@app.route('/service-worker.js')
+def service_worker():
+    return send_from_directory(os.path.join(app.root_path, 'static'), 'service-worker.js')
 
 with app.app_context():
     db.create_all()
