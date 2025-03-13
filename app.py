@@ -20,7 +20,7 @@ from flask_talisman import Talisman
 logging.basicConfig(level=logging.INFO)
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'postgresql://postgres:U70fxDoJV2sMgf18@jocosely-witty-vizcacha.data-1.use1.tembo.io:5432/postgres')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'postgresql://neondb_owner:npg_QL5klvR2mqSN@ep-orange-mud-a8vh3oi3-pooler.eastus2.azure.neon.tech/neondb?sslmode=require')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = os.getenv('SECRET_KEY', 'sua_chave_secreta')
 app.config['SECURITY_PASSWORD_SALT'] = os.getenv('SECURITY_PASSWORD_SALT', 'seu_salt_de_seguranca')
