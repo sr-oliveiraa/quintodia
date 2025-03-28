@@ -319,6 +319,40 @@ def login():
 
     return render_template('login.html')
 
+import random  # Import necessário para mensagens aleatórias
+
+def gerar_mensagem_dinamica(usuario, casa, ranking_usuarios, tarefas):
+    mensagens = []
+
+    # Mensagem baseada no ranking
+    if ranking_usuarios:
+        primeiro = ranking_usuarios[0]
+        if primeiro.nome == usuario.nome:
+            mensagens.append("🎉 Parabéns, campeão! Você está tão na frente que até o Wi-Fi está tentando te alcançar!")
+        else:
+            mensagens.append(f"💪 {primeiro.nome} está liderando o ranking. Você vai deixar isso assim?")
+
+    # Mensagem baseada nas tarefas pendentes
+    tarefas_pendentes = [tarefa for tarefa in tarefas if not tarefa.concluida]
+    if tarefas_pendentes:
+        mensagens.append(f"📋 Você tem {len(tarefas_pendentes)} tarefas pendentes. Que tal dar uma de herói e salvar o dia?")
+        mensagens.append(f"😏 Que tal começar por '{tarefas_pendentes[0].titulo}' antes que vire um caos?")
+    else:
+        mensagens.append("✅ Uau! Todas as tarefas estão concluídas. Será que você está tentando me impressionar?")
+
+    # Mensagem baseada no estado emocional da casa
+    if casa.estado_emocional == "feliz":
+        mensagens.append("😊 A casa está tão feliz que até ela está surpresa com tamanha eficiência! Será que você é um robô disfarçado?")
+    elif casa.estado_emocional == "triste":
+        mensagens.append("😢 A casa está triste. Talvez seja porque você está ignorando as tarefas.")
+    elif casa.estado_emocional == "animado":
+        mensagens.append("🎉 A casa está animada! Mas não se empolgue demais, ainda tem trabalho a fazer.")
+    elif casa.estado_emocional == "irritado":
+        mensagens.append("😡 A casa está irritada. Será que é porque você deixou tudo para amanhã?")
+
+    # Escolher uma mensagem aleatória
+    return random.choice(mensagens)
+
 @app.route('/dashboard')
 def dashboard():
     if 'usuario_id' not in session:
@@ -361,6 +395,9 @@ def dashboard():
         Tarefa.concluida == True, Usuario.casa_id == usuario.casa_id
     ).group_by(Usuario.id).order_by(db.func.count(Tarefa.id).desc()).all()
 
+    # Gerar mensagem dinâmica
+    mensagem_dinamica = gerar_mensagem_dinamica(usuario, casa, ranking_usuarios, tarefas)
+
     return render_template('dashboard.html', 
                            usuario=usuario, 
                            tarefas=tarefas,
@@ -369,7 +406,8 @@ def dashboard():
                            casa=casa,
                            ranking_usuarios=ranking_usuarios,
                            evento=evento, 
-                           evoluiu=evoluiu)
+                           evoluiu=evoluiu,
+                           mensagem_dinamica=mensagem_dinamica)
 
 @app.route('/logout')
 def logout():
