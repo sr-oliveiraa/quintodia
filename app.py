@@ -181,6 +181,9 @@ class Casa(db.Model):
     nome = db.Column(db.String(100), nullable=False)
     endereco = db.Column(db.String(200), nullable=True)
     num_moradores = db.Column(db.Integer, default=0)
+    estado_emocional = db.Column(db.String(20), default="neutro")  # "feliz", "triste", "neutro", "animado", "relaxado", "irritado"
+    nivel = db.Column(db.Integer, default=1)  # Nível da casa
+    energia = db.Column(db.Integer, default=50)  # Energia da casa (0 a 100)
 
     moradores = db.relationship('Usuario', backref='casa', lazy=True)
     tarefas = db.relationship('Tarefa', backref='casa', lazy=True)  # Adicionado para permitir acesso às tarefas
@@ -188,6 +191,53 @@ class Casa(db.Model):
 
     def __repr__(self):
         return f'<Casa {self.nome}>'
+
+    def atualizar_estado_emocional(self):
+        tarefas_concluidas = sum(1 for tarefa in self.tarefas if tarefa.concluida)
+        if tarefas_concluidas >= 10:
+            self.estado_emocional = "animado"  # 🎉
+        elif 5 <= tarefas_concluidas < 10:
+            self.estado_emocional = "feliz"  # 😊
+        elif 1 <= tarefas_concluidas < 5:
+            self.estado_emocional = "relaxado"  # 😌
+        elif tarefas_concluidas == 0:
+            self.estado_emocional = "triste"  # 😢
+        elif self.energia <= 20:
+            self.estado_emocional = "irritado"  # 😡
+        else:
+            self.estado_emocional = "neutro"  # 😐
+        db.session.commit()
+
+    def obter_emoji_estado_emocional(self):
+        emojis = {
+            "animado": "🎉",
+            "feliz": "😊",
+            "relaxado": "😌",
+            "triste": "😢",
+            "irritado": "😡",
+            "neutro": "😐"
+        }
+        return emojis.get(self.estado_emocional, "😐")
+
+    def verificar_evolucao(self):
+        tarefas_concluidas = sum(1 for tarefa in self.tarefas if tarefa.concluida)
+        novo_nivel = (tarefas_concluidas // 5) + 1
+        if novo_nivel > self.nivel:
+            self.nivel = novo_nivel
+            db.session.commit()
+            return True  # Indica que houve evolução
+        return False
+
+    def ajustar_energia(self, delta):
+        self.energia = max(0, min(100, self.energia + delta))
+        db.session.commit()
+
+    def verificar_eventos(self):
+        if self.energia >= 80:
+            return "surpresa"  # Evento positivo
+        elif self.energia <= 20:
+            return "crise"  # Evento negativo
+        return None
 
 class Usuario(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -285,6 +335,9 @@ def dashboard():
 
     # Buscar informações da casa associada ao usuário
     casa = Casa.query.get(usuario.casa_id)
+    casa.atualizar_estado_emocional()
+    evento = casa.verificar_eventos()
+    evoluiu = casa.verificar_evolucao()
 
     # Buscar todas as tarefas da casa do usuário
     tarefas = Tarefa.query.filter_by(casa_id=usuario.casa_id).all()
@@ -314,7 +367,9 @@ def dashboard():
                            total_despesas=total_despesas, 
                            num_moradores=num_moradores, 
                            casa=casa,
-                           ranking_usuarios=ranking_usuarios)
+                           ranking_usuarios=ranking_usuarios,
+                           evento=evento, 
+                           evoluiu=evoluiu)
 
 @app.route('/logout')
 def logout():

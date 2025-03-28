@@ -5,62 +5,17 @@
 {% block header %}Dashboard{% endblock %}
 
 {% block content %}
+
+
+
   <!-- Mensagem de boas-vindas -->
   <div class="card">
     <h3>Bem-vindo, {{ usuario.nome }}!</h3>
     <p>Aqui você tem uma visão geral do gerenciamento da sua casa.</p>
   </div>
 
-  <!-- Resumo das Despesas -->
-  <div class="card">
-    <h3>Despesas do Mês</h3>
-    <p>Total de despesas: R$ {{ total_despesas }}</p>
-  </div>
-  
-  <!-- Resumo das Tarefas -->
-  <div class="card">
-    <h3>Tarefas Pendentes</h3>
-    <ul>
-      {% for tarefa in tarefas if not tarefa.concluida %}
-        <li>{{ tarefa.titulo }}</li>
-      {% endfor %}
-    </ul>
-    <p>Você possui {{ tarefas|selectattr('concluida', 'equalto', False)|list|length }} tarefas pendentes para hoje.</p>
-  </div>
-  
-  <!-- Ranking de Conclusão de Tarefas -->
-  <div class="card">
-    <h3>Ranking de Tarefas</h3>
-    <ol>
-      {% for usuario in ranking_usuarios %}
-        <li>
-          <span class="ranking-numero">
-            {% if loop.index == 1 %}
-              <strong style="color: gold;">🥇</strong>
-            {% elif loop.index == 2 %}
-              <strong style="color: silver;">🥈</strong>
-            {% elif loop.index == 3 %}
-              <strong style="color: bronze;">🥉</strong>
-            {% else %}
-              {{ loop.index }}º
-            {% endif %}
-          </span>
-          <img src="{{ usuario.foto_perfil_url }}" alt="Foto de perfil de {{ usuario.nome }}" class="perfil-foto">
-          {{ usuario.nome }} - {{ usuario.tarefas_concluidas }} tarefas concluídas
-        </li>
-      {% endfor %}
-    </ol>
-  </div>
 
-  <!-- Botão para acessar o gráfico de gastos -->
-  <div class="card">
-    <h3>Gráfico de Gastos</h3>
-    <a href="{{ url_for('grafico_gastos') }}">
-      <button type="button">Ver Gráfico de Gastos</button>
-    </a>
-  </div>
-
- <!-- Análise de Dados da Casa -->
+  <!-- Análise de Dados da Casa -->
 <div class="card">
   <h3>Análise Inteligente</h3>
   <button type="button" onclick="analisarDados()">Analisar Dados</button>
@@ -76,6 +31,113 @@
     <p>Carregando análise, por favor aguarde...</p>
   </div>
 </div>
+
+
+
+<!-- Ranking de Conclusão de Tarefas -->
+<div class="card">
+  <h3>Ranking de Tarefas</h3>
+  <ol>
+    {% for usuario in ranking_usuarios %}
+      <li>
+        <span class="ranking-numero">
+          {% if loop.index == 1 %}
+            <strong style="color: gold;">🥇</strong>
+          {% elif loop.index == 2 %}
+            <strong style="color: silver;">🥈</strong>
+          {% elif loop.index == 3 %}
+            <strong style="color: bronze;">🥉</strong>
+          {% else %}
+            {{ loop.index }}º
+          {% endif %}
+        </span>
+        <img src="{{ usuario.foto_perfil_url }}" alt="Foto de perfil de {{ usuario.nome }}" class="perfil-foto">
+        {{ usuario.nome }} - {{ usuario.tarefas_concluidas }} tarefas concluídas
+      </li>
+    {% endfor %}
+  </ol>
+</div>
+
+
+  <!-- Resumo das Tarefas -->
+  <div class="card">
+    <h3>Tarefas Pendentes</h3>
+    <ul>
+      {% for tarefa in tarefas if not tarefa.concluida %}
+        <li>{{ tarefa.titulo }}</li>
+      {% endfor %}
+    </ul>
+    <p>Você possui {{ tarefas|selectattr('concluida', 'equalto', False)|list|length }} tarefas pendentes para hoje.</p>
+  </div>
+  
+  <!-- Resumo das Despesas -->
+  <div class="card">
+    <h3>Despesas do Mês</h3>
+    <p>Total de despesas: R$ {{ total_despesas }}</p>
+  </div>
+  
+
+    <!-- Botão para acessar o gráfico de gastos -->
+    <div class="card">
+      <h3>Gráfico de Gastos</h3>
+      <a href="{{ url_for('grafico_gastos') }}">
+        <button type="button">Ver Gráfico de Gastos</button>
+      </a>
+    </div>
+
+    <div class="house-status-container">
+      <div class="status-row">
+          <!-- Nível da Casa -->
+          <div class="status-card house-level">
+              <i class="fas fa-home status-icon"></i>
+              <h3 class="status-title">Nível da Casa</h3>
+              <div class="status-value">Nível {{ casa.nivel }}</div>
+             
+          </div>
+    
+          <!-- Estado Emocional -->
+          <div class="status-card house-emotion">
+              <div class="emotion-icon">
+                  {% if casa.estado_emocional == 'feliz' %}
+                      <i class="fas fa-laugh-beam"></i>
+                  {% elif casa.estado_emocional == 'triste' %}
+                      <i class="fas fa-sad-tear"></i>
+                  {% else %}
+                      <i class="fas fa-meh"></i>
+                  {% endif %}
+              </div>
+              <h3 class="status-title">Humor da Casa</h3>
+              <div class="status-value">{{ casa.estado_emocional|title }}</div>
+          </div>
+    
+          <!-- Energia -->
+          <div class="status-card house-energy">
+              <i class="fas fa-bolt status-icon"></i>
+              <h3 class="status-title">Energia</h3>
+              <div class="status-value">{{ casa.energia }}%</div>
+              <div class="energy-bar">
+                  <div class="energy-fill" style="width: '{{ casa.energia|default(0) }}%';"></div>
+              </div>
+          </div>
+      </div>
+    </div>
+  
+
+
+
+ 
+
+
+
+  <!-- Eventos -->
+  {% if evento == 'surpresa' %}
+    <div class="evento-surpresa">🎉 Surpresa! A casa está animada!</div>
+  {% elif evento == 'crise' %}
+    <div class="evento-crise">💨 Crise! A casa está cheia de poeira!</div>
+  {% endif %}
+</div>
+
+
 
 <style>
   /* Animações */
@@ -104,6 +166,108 @@
 
   button:hover {
     background-color: #3E5A4E;
+  }
+
+  .house-status-container {
+      margin-top: 20px;
+  }
+
+  .status-row {
+      display: flex;
+      flex-wrap: wrap; /* Permite que os cartões se ajustem em telas menores */
+      gap: 20px;
+      justify-content: center; /* Centraliza os cartões */
+  }
+
+  .status-card {
+      flex: 1 1 calc(33.333% - 20px); /* Largura flexível para 3 cartões por linha */
+      max-width: 300px; /* Limita a largura máxima */
+      text-align: center;
+      padding: 20px;
+      border-radius: 15px; /* Bordas arredondadas */
+      background: linear-gradient(145deg, #ffffff, #e6e6e6); /* Gradiente sutil */
+      box-shadow: 6px 6px 12px #d1d1d1, -6px -6px 12px #ffffff; /* Efeito de profundidade */
+      transition: transform 0.3s ease, box-shadow 0.3s ease; /* Animação suave */
+  }
+
+  .status-card:hover {
+      transform: translateY(-10px); /* Elevação ao passar o mouse */
+      box-shadow: 8px 8px 16px #c1c1c1, -8px -8px 16px #ffffff; /* Sombra mais intensa */
+  }
+
+  .status-card.house-level {
+      background: linear-gradient(145deg, #e0f7f4, #c8eae7); /* Verde água moderno */
+      border: none;
+      color: #2c6e6e;
+  }
+
+  .status-card.house-emotion {
+      background: linear-gradient(145deg, #e8f0fc, #d0e0f5); /* Azul claro moderno */
+      border: none;
+      color: #3a5a8e;
+  }
+
+  .status-card.house-energy {
+      background: linear-gradient(145deg, #fff8e6, #f7e8d0); /* Amarelo pastel moderno */
+      border: none;
+      color: #8a5a00;
+  }
+
+  .status-card .status-icon {
+      font-size: 36px; /* Ícones maiores */
+      margin-bottom: 15px;
+      color: inherit; /* Cor herdada do card */
+  }
+
+  .status-card .status-title {
+      font-size: 20px; /* Tamanho maior para o título */
+      margin-bottom: 10px;
+      font-weight: bold;
+      color: inherit; /* Cor herdada do card */
+  }
+
+  .status-card .status-value {
+      font-size: 18px; /* Tamanho maior para o valor */
+      font-weight: bold;
+      color: inherit; /* Cor herdada do card */
+  }
+
+  .energy-bar {
+      margin-top: 15px;
+      height: 12px;
+      background-color: #ddd;
+      border-radius: 6px;
+      overflow: hidden;
+  }
+
+  .energy-fill {
+      height: 100%;
+      background-color: #4A6B5C; /* Cor consistente com o aplicativo */
+  }
+
+  @media (max-width: 768px) {
+      .status-card {
+          flex: 1 1 calc(50% - 20px); /* Ajusta para 2 cartões por linha */
+      }
+  }
+
+  @media (max-width: 480px) {
+      .status-card {
+          flex: 1 1 100%; /* Ajusta para 1 cartão por linha */
+          padding: 15px; /* Reduz o padding */
+      }
+
+      .status-card .status-title {
+          font-size: 18px; /* Ajusta o tamanho da fonte */
+      }
+
+      .status-card .status-value {
+          font-size: 16px;
+      }
+
+      .status-card .status-icon {
+          font-size: 30px; /* Ícones menores para telas pequenas */
+      }
   }
 </style>
 

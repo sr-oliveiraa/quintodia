@@ -1,0 +1,92 @@
+.house-status-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.status-card {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+    border: 2px solid #e0e0e0;
+    position: relative;
+    overflow: hidden;
+}
+
+.status-card:hover {
+    transform: translateY(-5px);
+}
+
+.house-level {
+    background: linear-gradient(135deg, #6b48ff, #9747ff);
+    color: white;
+}
+
+.house-emotion {
+    background: linear-gradient(135deg, #ff7eb3, #ff4d94);
+}
+
+.house-energy {
+    background: linear-gradient(135deg, #36d1dc, #5b86e5);
+}
+
+.house-personality {
+    background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+}
+
+.status-icon {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.status-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: white;
+}
+
+.status-value {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 10px 0;
+    color: white;
+}
+
+.energy-bar {
+    width: 100%;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.energy-fill {
+    height: 100%;
+    background: #4CAF50;
+    transition: width 0.3s ease;
+}
+
+.emotion-icon {
+    font-size: 3rem;
+    margin: 10px 0;
+}
+
+.house-personality-traits {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.personality-trait {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 5px 15px;
+    border-radius: 20px;
+    color: white;
+    font-size: 0.9rem;
+}
