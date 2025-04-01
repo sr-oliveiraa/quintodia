@@ -10,15 +10,25 @@
 
   <!-- Mensagem de boas-vindas -->
   <div class="card">
-    <h3>Bem-vindo, {{ usuario.nome }}!</h3>
-    <p>{{ mensagem_dinamica }}</p>
+    <div class="welcome-container">
+      <div class="welcome-text">
+        <h3>Bem-vindo, {{ usuario.nome }}!</h3>
+        <p>{{ mensagem_dinamica }}</p>
+      </div>
+      <div class="robo-container">
+        <i class="fas fa-robot assistant-icon"></i>
+      </div>
+    </div>
   </div>
+    
 
 
   <!-- Análise de Dados da Casa -->
-<div class="card">
+<div class="card analyze">
+  
   <h3>Análise Inteligente</h3>
   <button type="button" onclick="analisarDados()">Analisar Dados</button>
+  
   
   <div id="analise-resultados" style="display: none;">
       <h4>Resultados da Análise:</h4>
@@ -27,7 +37,7 @@
   </div>
 
   <div id="loading" style="display: none; text-align: center; margin-top: 20px;">
-    <img src="{{ url_for('static', filename='img/loading.gif') }}" alt="Carregando..." style="width: 50px; height: 50px;">
+    <i class="fas fa-cog loading-icon"></i>
     <p>Carregando análise, por favor aguarde...</p>
   </div>
 </div>
@@ -35,7 +45,7 @@
 
 
 <!-- Ranking de Conclusão de Tarefas -->
-<div class="card">
+<div class="card ranking">
   <h3>Ranking de Tarefas</h3>
   <ol>
     {% for usuario in ranking_usuarios %}
@@ -60,7 +70,7 @@
 
 
   <!-- Resumo das Tarefas -->
-  <div class="card">
+  <div class="card tasks">
     <h3>Tarefas Pendentes</h3>
     <ul>
       {% for tarefa in tarefas if not tarefa.concluida %}
@@ -71,7 +81,7 @@
   </div>
   
   <!-- Resumo das Despesas -->
-  <div class="card">
+  <div class="card expenses">
     <h3>Despesas do Mês</h3>
     <p>Total de despesas: R$ {{ total_despesas }}</p>
   </div>
@@ -85,40 +95,78 @@
       </a>
     </div>
 
-    <div class="house-status-container">
-      <div class="status-row">
-          <!-- Nível da Casa -->
-          <div class="status-card house-level">
-              <i class="fas fa-home status-icon"></i>
-              <h3 class="status-title">Nível da Casa</h3>
-              <div class="status-value">Nível {{ casa.nivel }}</div>
-             
-          </div>
-    
-          <!-- Estado Emocional -->
-          <div class="status-card house-emotion">
-              <div class="emotion-icon">
-                  {% if casa.estado_emocional == 'feliz' %}
-                      <i class="fas fa-laugh-beam"></i>
-                  {% elif casa.estado_emocional == 'triste' %}
-                      <i class="fas fa-sad-tear"></i>
-                  {% else %}
-                      <i class="fas fa-meh"></i>
-                  {% endif %}
+    <div class="cards-status-row">
+      <!-- Nível da Casa -->
+      <div class="card house-level">
+        <h3>Nível da Casa</h3>
+        <div class="card-content">
+          <i class="fas fa-trophy status-icon"></i>
+          <div class="level-info">
+            <div class="status-value">Nível {{ casa.nivel }}</div>
+            <div class="level-details">
+              <small>Progresso da Casa</small>
+              <div class="level-text">
+                {{ casa.nivel }} de 10 níveis alcançados
               </div>
-              <h3 class="status-title">Humor da Casa</h3>
-              <div class="status-value">{{ casa.estado_emocional|title }}</div>
+            </div>
           </div>
+          <div class="level-stars">
+            {% for i in range(1, 11) %}
+              <i class="fas fa-star {{ 'active' if i <= casa.nivel else 'inactive' }}"></i>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
     
-          <!-- Energia -->
-          <div class="status-card house-energy">
-              <i class="fas fa-bolt status-icon"></i>
-              <h3 class="status-title">Energia</h3>
-              <div class="status-value">{{ casa.energia }}%</div>
-              <div class="energy-bar">
-                  <div class="energy-fill" style="width: '{{ casa.energia|default(0) }}%';"></div>
-              </div>
+      <!-- Estado Emocional -->
+      <div class="card house-emotion">
+        <h3>Humor da Casa</h3>
+        <div class="card-content">
+          <div class="mood-icon">
+            {% if casa.estado_emocional == 'feliz' %}
+              <i class="fas fa-laugh-beam status-icon"></i>
+            {% elif casa.estado_emocional == 'triste' %}
+              <i class="fas fa-sad-tear status-icon"></i>
+            {% else %}
+              <i class="fas fa-meh status-icon"></i>
+            {% endif %}
           </div>
+          <div class="mood-info">
+            <div class="status-value">{{ casa.estado_emocional|title }}</div>
+            <div class="mood-details">
+              <small>Estado Atual</small>
+              <div class="mood-text">
+                {% if casa.estado_emocional == 'feliz' %}
+                  Todos estão produtivos!
+                {% elif casa.estado_emocional == 'triste' %}
+                  Precisa de atenção...
+                {% else %}
+                  Mantendo a rotina
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <!-- Progresso Mensal -->
+      <div class="card house-progress">
+        <h3>Progresso Mensal</h3>
+        <div class="card-content">
+          <i class="fas fa-chart-line status-icon"></i>
+          <div class="progress-info">
+            <div class="status-value">{{ tarefas|selectattr('concluida', 'equalto', True)|list|length }} / {{ tarefas|length }}</div>
+            <div class="progress-details">
+              <small>Tarefas Completadas</small>
+              <div class="completion-rate">
+                Taxa de conclusão: {{ ((tarefas|selectattr('concluida', 'equalto', True)|list|length / tarefas|length * 100) if tarefas|length > 0 else 0)|round(1) }}%
+              </div>
+            </div>
+          </div>
+          <div class="progress-bar-container">
+            <div class="progress-bar" style="width: '{{ ((tarefas|selectattr('concluida', 'equalto', True)|list|length / tarefas|length * 100) if tarefas|length > 0 else 0)|round(1) }}%'"></div>
+          </div>
+        </div>
       </div>
     </div>
   
@@ -140,134 +188,387 @@
 
 
 <style>
-  /* Animações */
   .card {
-    animation: fadeIn 0.5s ease-in-out;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    padding: 25px;
+    margin-bottom: 25px;
+    transition: all 0.3s ease;
   }
 
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(31, 38, 135, 0.25);
   }
 
   .card h3 {
-    color: #4A6B5C;
+    color: #2c3e50;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    position: relative;
+    padding-bottom: 10px;
   }
 
+  .card h3::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50px;
+    height: 3px;
+    background: linear-gradient(90deg, #3498db, #2ecc71);
+    border-radius: 2px;
+  }
+
+  /* Card específicos */
+  .card.analyze {
+    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+  }
+
+  .card.ranking {
+    background: linear-gradient(135deg, #c3e6ff, #82c4ff);
+  }
+
+  .card.tasks {
+    background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+  }
+
+  .card.expenses {
+    background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+  }
+
+  .card.house-progress {
+    background: linear-gradient(135deg, #E8F5E9, #81C784);
+  }
+
+  .progress-info {
+    text-align: center;
+    margin: 10px 0;
+  }
+
+  .progress-details {
+    margin-top: 5px;
+    font-size: 0.9em;
+    color: #2E7D32;
+  }
+
+  .completion-rate {
+    font-size: 0.85em;
+    color: #1B5E20;
+    margin-top: 5px;
+    font-weight: bold;
+  }
+
+  .progress-bar-container {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    margin-top: 15px;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #2E7D32, #4CAF50);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+  }
+
+  .card.house-progress .status-icon {
+    color: #2E7D32;
+    font-size: 2.5em;
+    margin-bottom: 15px;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+
+  /* Estilos para o Nível da Casa */
+  .card.house-level .status-icon {
+    color: #FFD700;
+    font-size: 2.5em;
+    margin-bottom: 15px;
+    animation: shine 2s infinite;
+  }
+
+  .level-stars {
+    display: flex;
+    gap: 5px;
+    margin-top: 10px;
+  }
+
+  .level-stars .fa-star {
+    font-size: 1em;
+  }
+
+  .level-stars .active {
+    color: #FFD700;
+    animation: star-pulse 2s infinite;
+  }
+
+  .level-stars .inactive {
+    color: #ddd;
+  }
+
+  .level-details {
+    margin-top: 5px;
+    font-size: 0.9em;
+    color: #4a69bd;
+  }
+
+  .level-text {
+    font-size: 0.85em;
+    color: #34495e;
+    margin-top: 5px;
+    font-weight: bold;
+  }
+
+  /* Estilos para o Humor da Casa */
+  .card.house-emotion .status-icon {
+    font-size: 2.5em;
+    margin-bottom: 15px;
+    animation: bounce 2s infinite;
+  }
+
+  .mood-details {
+    margin-top: 5px;
+    font-size: 0.9em;
+    color: #27ae60;
+  }
+
+  .mood-text {
+    font-size: 0.85em;
+    color: #2ecc71;
+    margin-top: 5px;
+    font-weight: bold;
+  }
+
+  /* Botões */
   button {
-    background-color: #4A6B5C;
+    background: linear-gradient(135deg, #3498db, #2ecc71);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 25px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
   }
 
   button:hover {
-    background-color: #3E5A4E;
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
   }
 
-  .house-status-container {
-      margin-top: 20px;
+  /* Status Cards */
+  .cards-status-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin: 20px 0;
   }
 
-  .status-row {
-      display: flex;
-      flex-wrap: wrap; /* Permite que os cartões se ajustem em telas menores */
-      gap: 20px;
-      justify-content: center; /* Centraliza os cartões */
+  .card-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
   }
 
-  .status-card {
-      flex: 1 1 calc(33.333% - 20px); /* Largura flexível para 3 cartões por linha */
-      max-width: 300px; /* Limita a largura máxima */
-      text-align: center;
-      padding: 20px;
-      border-radius: 15px; /* Bordas arredondadas */
-      background: linear-gradient(145deg, #ffffff, #e6e6e6); /* Gradiente sutil */
-      box-shadow: 6px 6px 12px #d1d1d1, -6px -6px 12px #ffffff; /* Efeito de profundidade */
-      transition: transform 0.3s ease, box-shadow 0.3s ease; /* Animação suave */
+  .card.house-level {
+    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
   }
 
-  .status-card:hover {
-      transform: translateY(-10px); /* Elevação ao passar o mouse */
-      box-shadow: 8px 8px 16px #c1c1c1, -8px -8px 16px #ffffff; /* Sombra mais intensa */
+  .card.house-emotion {
+    background: linear-gradient(135deg, #ffd3e0, #f5d0d9);
   }
 
-  .status-card.house-level {
-      background: linear-gradient(145deg, #e0f7f4, #c8eae7); /* Verde água moderno */
-      border: none;
-      color: #2c6e6e;
+  .status-icon {
+    font-size: 2rem;
+    margin-bottom: 10px;
   }
 
-  .status-card.house-emotion {
-      background: linear-gradient(145deg, #e8f0fc, #d0e0f5); /* Azul claro moderno */
-      border: none;
-      color: #3a5a8e;
-  }
-
-  .status-card.house-energy {
-      background: linear-gradient(145deg, #fff8e6, #f7e8d0); /* Amarelo pastel moderno */
-      border: none;
-      color: #8a5a00;
-  }
-
-  .status-card .status-icon {
-      font-size: 36px; /* Ícones maiores */
-      margin-bottom: 15px;
-      color: inherit; /* Cor herdada do card */
-  }
-
-  .status-card .status-title {
-      font-size: 20px; /* Tamanho maior para o título */
-      margin-bottom: 10px;
-      font-weight: bold;
-      color: inherit; /* Cor herdada do card */
-  }
-
-  .status-card .status-value {
-      font-size: 18px; /* Tamanho maior para o valor */
-      font-weight: bold;
-      color: inherit; /* Cor herdada do card */
+  .status-value {
+    font-size: 1.2rem;
+    font-weight: 600;
   }
 
   .energy-bar {
-      margin-top: 15px;
-      height: 12px;
-      background-color: #ddd;
-      border-radius: 6px;
-      overflow: hidden;
+    width: 100%;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 5px;
+    overflow: hidden;
+    margin-top: 10px;
   }
 
   .energy-fill {
-      height: 100%;
-      background-color: #4A6B5C; /* Cor consistente com o aplicativo */
+    height: 100%;
+    background: linear-gradient(90deg, #3498db, #2ecc71);
+    border-radius: 5px;
+    transition: width 0.3s ease;
   }
 
   @media (max-width: 768px) {
-      .status-card {
-          flex: 1 1 calc(50% - 20px); /* Ajusta para 2 cartões por linha */
-      }
+    .cards-status-row {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 
   @media (max-width: 480px) {
-      .status-card {
-          flex: 1 1 100%; /* Ajusta para 1 cartão por linha */
-          padding: 15px; /* Reduz o padding */
-      }
+    .cards-status-row {
+      grid-template-columns: 1fr;
+    }
+  }
 
-      .status-card .status-title {
-          font-size: 18px; /* Ajusta o tamanho da fonte */
-      }
+  /* Animações */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
-      .status-card .status-value {
-          font-size: 16px;
-      }
+  .card {
+    animation: fadeIn 0.5s ease-out;
+  }
 
-      .status-card .status-icon {
-          font-size: 30px; /* Ícones menores para telas pequenas */
-      }
+  /* Loading animation */
+  #loading img {
+    filter: hue-rotate(45deg);
+    animation: rotate 2s linear infinite;
+  }
+
+  @keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  @keyframes shine {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.9; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  @keyframes star-pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+
+  .welcome-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  .welcome-text {
+    flex: 1;
+  }
+
+  .robo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+    transition: all 0.3s ease;
+  }
+
+  .robo-container:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.3);
+  }
+
+  .assistant-icon {
+    font-size: 2em;
+    color: #3498db;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-10px) rotate(10deg);
+    }
+    100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+  }
+
+  .loading-icon {
+    font-size: 2.5em;
+    color: #3498db;
+    animation: spin-glow 2s linear infinite;
+  }
+
+  @keyframes spin-glow {
+    0% {
+      transform: rotate(0deg);
+      text-shadow: 0 0 10px #3498db;
+    }
+    50% {
+      text-shadow: 0 0 20px #3498db;
+    }
+    100% {
+      transform: rotate(360deg);
+      text-shadow: 0 0 10px #3498db;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .welcome-container {
+      flex-direction: column-reverse;
+      text-align: center;
+    }
+    
+    .robo-container {
+      margin: 0 auto;
+    }
+  }
+
+  /* Responsividade */
+  @media (max-width: 768px) {
+    .card {
+      padding: 20px;
+    }
+    
+    .status-row {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .card {
+      padding: 15px;
+    }
+    
+    .status-row {
+      grid-template-columns: 1fr;
+    }
+    
+    button {
+      width: 100%;
+      padding: 10px 20px;
+    }
   }
 </style>
 
@@ -300,6 +601,16 @@ function analisarDados() {
             alert('Erro ao analisar dados. Tente novamente mais tarde.');
         });
 }
+
+// Animação para o card de energia
+document.querySelectorAll('.card.energy').forEach(card => {
+  card.addEventListener('mouseenter', () => {
+    card.style.boxShadow = '0 0 20px #ffcc00, 0 0 40px #ffcc00';
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.boxShadow = '8px 8px 16px #14141f, -8px -8px 16px #32324f';
+  });
+});
 </script>
 
 {% endblock %}

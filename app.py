@@ -328,27 +328,35 @@ def gerar_mensagem_dinamica(usuario, casa, ranking_usuarios, tarefas):
     if ranking_usuarios:
         primeiro = ranking_usuarios[0]
         if primeiro.nome == usuario.nome:
-            mensagens.append("🎉 Parabéns, campeão! Você está tão na frente que até o Wi-Fi está tentando te alcançar!")
+            mensagens.append("🌟 Olha quem chegou ao topo! Mandou bem!")
+            mensagens.append("👑 Reinando absoluto! Continue assim!")
         else:
-            mensagens.append(f"💪 {primeiro.nome} está liderando o ranking. Você vai deixar isso assim?")
+            mensagens.append(f"🎯 {primeiro.nome} tá voando! Bora mostrar seu valor?")
+            mensagens.append(f"🚀 {primeiro.nome} decolou! Sua vez de brilhar!")
 
     # Mensagem baseada nas tarefas pendentes
     tarefas_pendentes = [tarefa for tarefa in tarefas if not tarefa.concluida]
     if tarefas_pendentes:
-        mensagens.append(f"📋 Você tem {len(tarefas_pendentes)} tarefas pendentes. Que tal dar uma de herói e salvar o dia?")
-        mensagens.append(f"😏 Que tal começar por '{tarefas_pendentes[0].titulo}' antes que vire um caos?")
+        mensagens.append(f"📝 {len(tarefas_pendentes)} tarefas te aguardam! Bora lá?")
+        mensagens.append(f"🌅 Novo dia, hora de agir!")
+        mensagens.append(f"☕ Café pronto? '{tarefas_pendentes[0].titulo}' te espera!")
     else:
-        mensagens.append("✅ Uau! Todas as tarefas estão concluídas. Será que você está tentando me impressionar?")
+        mensagens.append("✨ Zero pendências! Você é incrível!")
+        mensagens.append("🎮 Tudo em ordem! Hora de relaxar!")
 
     # Mensagem baseada no estado emocional da casa
     if casa.estado_emocional == "feliz":
-        mensagens.append("😊 A casa está tão feliz que até ela está surpresa com tamanha eficiência! Será que você é um robô disfarçado?")
+        mensagens.append("🏠 Casa feliz! Vamos comemorar?")
+        mensagens.append("😎 Clima perfeito por aqui!")
     elif casa.estado_emocional == "triste":
-        mensagens.append("😢 A casa está triste. Talvez seja porque você está ignorando as tarefas.")
+        mensagens.append("🌧️ Casa tristinha... Bora animar?")
+        mensagens.append("🕰️ Aquela tarefa ainda espera...")
     elif casa.estado_emocional == "animado":
-        mensagens.append("🎉 A casa está animada! Mas não se empolgue demais, ainda tem trabalho a fazer.")
+        mensagens.append("🎨 Casa super animada hoje!")
+        mensagens.append("🎵 Energia positiva no ar!")
     elif casa.estado_emocional == "irritado":
-        mensagens.append("😡 A casa está irritada. Será que é porque você deixou tudo para amanhã?")
+        mensagens.append("⚡ Casa estressada! Vamos resolver?")
+        mensagens.append("🌪️ Tensão no ar! Hora de agir!")
 
     # Escolher uma mensagem aleatória
     return random.choice(mensagens)

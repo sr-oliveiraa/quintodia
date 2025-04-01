@@ -1,7 +1,7 @@
 /* Estilo geral */
 body {
   font-family: 'Arial', sans-serif;
-  background: #C0C0C0;
+  background: linear-gradient(135deg, #4A6B5C, #6b8f71);
   color: #333;
   min-height: 100vh;
   display: flex;
@@ -11,13 +11,14 @@ body {
 }
 
 header {
-  background-color: #4A6B5C;
+  background: linear-gradient(135deg, #4A6B5C, #6b8f71);
   color: #fff;
   padding: 20px;
   text-align: center;
   width: 100%;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  animation: fadeInUp 0.8s ease-in-out;
 }
 
 nav {
@@ -27,7 +28,8 @@ nav {
   width: 100%;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   margin-top: 20px;
-  border-radius: 8px;
+  border-radius: 12px;
+  animation: fadeInUp 0.8s ease-in-out;
 }
 
 nav a {
@@ -37,11 +39,12 @@ nav a {
   color: #4A6B5C;
   font-weight: bold;
   text-align: center;
-  transition: color 0.3s;
+  transition: color 0.3s, transform 0.3s;
 }
 
 nav a:hover {
-  color: #dc3545; /* vermelho */
+  color: #6b8f71;
+  transform: scale(1.1);
   background-color: transparent; /* Remove o fundo verde */
 }
 
@@ -53,11 +56,17 @@ main {
 }
 
 .card {
-  background: #fff;
+  background: linear-gradient(135deg, #ffffff, #f3f4f6);
   padding: 20px;
   margin-bottom: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
 
 h3 {
@@ -127,22 +136,23 @@ footer {
 
 /* Estilo para o botão Voltar */
 button {
-  background-color: #4A6B5C; /* Verde do header */
+  background-color: #4A6B5C;
   color: white;
   border: none;
   padding: 5px 15px; /* Diminui o padding para tornar o botão menor */
   font-size: 14px; /* Fonte menor */
   font-weight: bold;
-  border-radius: 3px; /* Arredondamento mais suave */
+  border-radius: 8px; /* Arredondamento mais suave */
   cursor: pointer;
-  transition: background-color 0.3s, transform 0.2s;
+  transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 /* Efeito quando o mouse passa por cima do botão */
 button:hover {
-  background-color: #dc3545; /* Vermelho do hover do link */
+  background-color: #6b8f71;
   transform: scale(1.05); /* Leve aumento no tamanho do botão */
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
 }
 
 /* Efeito ao clicar no botão */
@@ -258,6 +268,7 @@ button:focus {
     object-fit: cover;
     margin-right: 10px;
     vertical-align: middle;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 .install-button {
   position: fixed;
@@ -267,18 +278,18 @@ button:focus {
   background-color: #4A6B5C;
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   font-weight: bold;
   cursor: pointer;
   z-index: 1000;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.2);
   transition: all 0.3s ease;
 }
 
 .install-button:hover {
-  background-color: #3E5A4E;
+  background-color: #6b8f71;
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
 }
 
 #pwa-install-container {
@@ -286,4 +297,16 @@ button:focus {
   bottom: 20px;
   right: 20px;
   z-index: 1000;
+}
+
+/* Animações */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
