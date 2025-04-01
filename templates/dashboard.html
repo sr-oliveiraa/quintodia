@@ -570,6 +570,24 @@
       padding: 10px 20px;
     }
   }
+
+  /* Ajuste para o conteúdo não ficar sob a barra de navegação móvel */
+  @media (max-width: 768px) {
+    .container {
+      padding-bottom: 70px; /* Aumenta o padding inferior para acomodar a barra de navegação */
+    }
+
+    /* Ajusta os cards para melhor visualização em mobile */
+    .card {
+      margin-bottom: 15px;
+    }
+
+    /* Reduz o espaçamento vertical entre elementos */
+    .cards-status-row {
+      gap: 15px;
+      margin: 15px 0;
+    }
+  }
 </style>
 
 <script>
