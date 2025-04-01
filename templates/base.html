@@ -139,31 +139,84 @@
       bottom: 0;
       left: 0;
       right: 0;
-      padding: 8px;
+      margin: 0;
+      padding: 0;
       background: rgba(255, 255, 255, 0.98);
       backdrop-filter: blur(10px);
       border-top: 1px solid rgba(0, 0, 0, 0.1);
       z-index: 1000;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      height: 60px;
+    }
+
+    body {
+      padding-bottom: 60px !important;
+      margin-bottom: 0 !important;
+    }
+
+    main {
+      padding-bottom: 60px;
     }
 
     .nav-link {
       flex: 1;
-      flex-direction: row;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
       justify-content: center;
-      padding: 8px;
-      gap: 6px;
+      align-items: center;
+      padding: 8px 0;
+      gap: 4px;
+      border-radius: 0;
+    }
+
+    .nav-link.active {
+      background: rgba(52, 152, 219, 0.1);
+      box-shadow: none;
+    }
+  }
+
+  /* Ajustes específicos para telas muito pequenas */
+  @media (max-width: 320px) {
+    .desktop-nav {
+      padding: 4px 2px;
+      height: 48px;
+    }
+
+    .nav-link {
+      padding: 4px 2px;
+      gap: 2px;
     }
 
     .nav-link i {
-      font-size: 1.1rem;
+      font-size: 1rem;
     }
 
     .nav-link span {
-      font-size: 0.8rem;
+      font-size: 0.65rem;
+    }
+  }
+
+  /* Ajustes para telas médias */
+  @media (min-width: 321px) and (max-width: 375px) {
+    .desktop-nav {
+      height: 52px;
+      padding: 6px 3px;
     }
 
-    body {
-      padding-bottom: 60px;
+    .nav-link {
+      padding: 5px 3px;
+      gap: 3px;
+    }
+
+    .nav-link i {
+      font-size: 1.05rem;
+    }
+
+    .nav-link span {
+      font-size: 0.7rem;
     }
   }
 
