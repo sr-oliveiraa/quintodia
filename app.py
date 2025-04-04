@@ -15,6 +15,9 @@ import uuid  # Adicionado para gerar nomes únicos para as fotos
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 import random
 from flask_talisman import Talisman
+from sqlalchemy.exc import OperationalError
+from time import sleep
+from sqlalchemy.pool import QueuePool
 
 # Configuração de logs
 logging.basicConfig(level=logging.INFO)
@@ -279,6 +282,35 @@ def home():
         return redirect(url_for('dashboard'))
     return redirect(url_for('login'))
 
+def retry_db_operation(operation, max_attempts=3, delay=1):
+    """
+    Tenta executar uma operação de banco de dados com retries.
+    
+    Args:
+        operation: função a ser executada
+        max_attempts: número máximo de tentativas
+        delay: tempo de espera entre tentativas em segundos
+    """
+    attempt = 0
+    last_error = None
+    
+    while attempt < max_attempts:
+        try:
+            return operation()
+        except OperationalError as e:
+            last_error = e
+            attempt += 1
+            if attempt == max_attempts:
+                break
+            sleep(delay)
+            # Tentar reconectar ao banco
+            db.session.remove()
+            db.engine.dispose()
+            
+    # Se todas as tentativas falharem, registra o erro e retorna None
+    logging.error(f"Erro após {max_attempts} tentativas: {last_error}")
+    return None
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -291,7 +323,16 @@ def login():
             flash('Muitas tentativas falhas. Tente novamente mais tarde.', 'error')
             return render_template('login.html')
 
-        usuario = Usuario.query.filter_by(email=email).first()
+        # Função que será executada com retry
+        def get_user():
+            return Usuario.query.filter_by(email=email).first()
+
+        # Tenta buscar o usuário com retry
+        usuario = retry_db_operation(get_user)
+
+        if usuario is None:
+            flash('Erro de conexão com o banco de dados. Tente novamente.', 'error')
+            return render_template('login.html')
 
         if usuario and bcrypt.check_password_hash(usuario.senha, senha):
             session['usuario_id'] = usuario.id  # Armazena o ID do usuário na sessão
@@ -902,6 +943,22 @@ def manifest():
 @app.route('/service-worker.js')
 def service_worker():
     return send_from_directory(os.path.join(app.root_path, 'static'), 'service-worker.js')
+
+# Configurações adicionais do SQLAlchemy
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+    'pool_size': 5,
+    'max_overflow': 10,
+    'pool_timeout': 30,
+    'pool_recycle': 1800,
+    'pool_pre_ping': True,
+    'connect_args': {
+        'connect_timeout': 10,
+        'keepalives': 1,
+        'keepalives_idle': 30,
+        'keepalives_interval': 10,
+        'keepalives_count': 5
+    }
+}
 
 with app.app_context():
     db.create_all()
