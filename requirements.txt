@@ -12,4 +12,4 @@ groq
 SQLAlchemy
 python-dotenv
 Flask-Mail
-flask_talisman
+flask_talisman 
